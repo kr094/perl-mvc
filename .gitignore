@@ -1,3 +1,4 @@
+perl-mvc/beta/*
 perl-mvc/scrap/*
 perl-mvc/data/sqlite3.exe
 *.db
