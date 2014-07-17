@@ -15,8 +15,8 @@ sub new {
 	
 	my $_self = {
 		_data => new Data(),
-		select => new_field(),
-		where => new_field(),
+		select => QueryFields::new_field(),
+		where => QueryFields::new_field(),
 		type => '',
 		from => '',
 		limit => 0
@@ -126,13 +126,18 @@ sub add_field {
 	# Yank it out of the fields
 	if(exists $values->{$field}) {
 		yank($fields, $field);
+		$values->{$field} = [$values->{$field}];
 	}
 	
 	# Put it on the end
 	push(@$fields, $field);
-	
+		
 	# Update the assoc value
-	$values->{$field} = $value;
+	if(ref $values->{$field} eq 'ARRAY') {
+		push($values->{$field}, $value);
+	} else {
+		$values->{$field} = $value;
+	}
 }
 
 # Splice an element by value
@@ -147,13 +152,6 @@ sub yank {
 			splice(@$fields, $_, 1);
 			last;
 		}
-	}
-}
-
-sub new_field {
-	return {
-		fields => [],
-		values => {}
 	}
 }
 
@@ -173,7 +171,12 @@ sub test {
 	
 	for(values $fields) {
 		$value = $values->{$_};
-		print "$_ => $value\n";
+		
+		if(ref $value eq 'ARRAY') {
+			print "$_ => @$value\n";
+		} else {
+			print "$_ => $value\n";
+		}
 	}
 }
 

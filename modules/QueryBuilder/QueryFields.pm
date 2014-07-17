@@ -3,7 +3,10 @@ use warnings;
 package QueryFields;
 
 sub new_field {
-
+	return {
+		fields => [],
+		values => {}
+	};
 }
 
 sub new_from {
