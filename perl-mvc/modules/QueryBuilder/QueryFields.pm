@@ -1,6 +1,6 @@
+package QueryFields;
 use strict;
 use warnings;
-package QueryFields;
 
 sub new_field {
 	return {

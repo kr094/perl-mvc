@@ -1,6 +1,7 @@
 use strict;
 use warnings;
-use lib './';
+
+use lib('../modules/QueryBuilder');
 use QueryBuilder;
 
 my $q = new QueryBuilder();
@@ -29,4 +30,5 @@ sub test {
 	$q->test($q->{$which_hash});
 }
 
+$q->query();
 test_select();

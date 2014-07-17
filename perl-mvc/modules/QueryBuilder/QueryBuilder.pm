@@ -1,9 +1,8 @@
-use lib '../modules/common';
-use lib '../modules/QueryBuilder';
 package QueryBuilder;
 use strict;
 use warnings;
 
+use lib('../modules/common', '../modules/Data/');
 use Data;
 use QueryFields;
 use Trim;

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use DBI;
 
-use lib '../modules/common';
+use lib('../modules/common');
 use This;
 
 sub new {
@@ -12,7 +12,7 @@ sub new {
 	
 	my $_self = {
 		dbi => 'SQLite',
-		dbname => 'kr094.db',
+		dbname => '../data/kr094.db',
 		dbh => undef,
 		query => '',
 		last_query => '',
