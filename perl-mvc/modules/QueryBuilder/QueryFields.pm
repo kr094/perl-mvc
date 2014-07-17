@@ -19,7 +19,7 @@ sub add_field {
 	# Yank it out of the fields
 	if(exists $values->{$field}) {
 		yank($fields, $field);
-		$values->{$field} = [$values->{$field}];
+		$values->{$field} = [$field];
 	}
 	
 	# Put it on the end

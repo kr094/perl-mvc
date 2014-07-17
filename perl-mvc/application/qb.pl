@@ -21,7 +21,7 @@ sub test_where {
 		->where('kittens', undef)
 		->where({hash => 'test'})
 		->where({data => 'data', someData => 'newData'})
-		->where({hash => 'update'}, {field => 'value'}, 'data', 'update2');
+		->where({hash => 'update'}, {field => 'value'}, 'data', 'newData');
 	test('where');
 }
 
