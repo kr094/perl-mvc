@@ -1,12 +1,11 @@
 use lib '../modules/common';
 use lib '../modules/QueryBuilder';
 package QueryBuilder;
-
 use strict;
 use warnings;
+
 use Data;
 use QueryFields;
-
 use Trim;
 
 sub new {	
