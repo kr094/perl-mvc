@@ -104,7 +104,7 @@ my $_exec = sub {
 # Build a hash reference with columns and values
 # This is what is returned to the querier
 my $_build_hash = sub {
-	my $t = t(\@_);
+	my $t = shift;
 	my @r = @{$t->('result')};
 	my %hash;
 	my $index = 0;
@@ -118,7 +118,8 @@ my $_build_hash = sub {
 	return \%hash;
 };
 
-# Public query method
+# Public methods #
+# Calls to t use This.pm to ensure an object reference
 sub query {
 	my $t = t(\@_);
 	my $query = shift;

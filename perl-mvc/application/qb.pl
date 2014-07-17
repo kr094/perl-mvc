@@ -32,3 +32,4 @@ sub test {
 
 $q->query();
 test_select();
+test_where();
