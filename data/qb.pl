@@ -36,5 +36,6 @@ sub test {
 	$q->test($q->{$which_hash});
 }
 
+$q->query();
 test_select();
 test_where();

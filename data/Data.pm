@@ -17,11 +17,13 @@ sub new {
 		query => '',
 		last_query => '',
 		rows_affected => 0,
-		result => undef,
-		result_hash => undef,
-		result_columns => undef,
+		result => [],
+		result_columns => [],
+		result_hash => {},
 		last_result => undef
 	};
+	
+	### Get / Set ###
 	
 	# Return a variable if the member is defined, the key exists, and it has been set
 	my $_get = sub {
@@ -43,7 +45,6 @@ sub new {
 		}
 	};
 	
-	# Public closure with access to this scope
 	my $_public = sub {
 		my $_m = shift;
 		my $_v = '';
@@ -60,6 +61,62 @@ sub new {
 	bless $_public, $_class;	
 	return $_public;
 }
+	
+### Private Subs ###
+
+my $_con = sub {
+	my $t = shift;
+	return $t->('dbh', DBI->connect(
+		'dbi:' .$t->('dbi')
+		.':dbname=' .$t->('dbname'),
+		'',
+		'',
+		{ RaiseError => 1}
+	));
+};
+
+my $_discon = sub {
+	my $t = shift;
+	my $db = $t->('dbh');
+	$db->disconnect();
+	return $t->('dbh', undef);
+};
+
+my $_exec = sub {
+	my $t = shift;
+	my $db = &$_con($t);
+	
+	my $sth = $db->prepare($t->('query'));
+	if(!$sth) {
+		die('no statement');
+	}
+	
+	my $ret = $sth->execute();
+	$t->('last_result', $t->('result'));
+	$t->('result', $sth->fetch());
+	$t->('result_columns', $sth->{NAME});
+	
+	$sth->finish();
+	$db = &$_discon($t);
+	return $ret;
+};
+
+# Build a hash reference with columns and values
+# This is what is returned to the querier
+my $_build_hash = sub {
+	my $t = t(\@_);
+	my @r = @{$t->('result')};
+	my %hash;
+	my $index = 0;
+	
+	# Loop through result columns
+	for my $col (@{$t->('result_columns')}) {
+		# Hash the result by column name
+		$hash{$col} = $r[$index];
+		$index++;
+	}
+	return \%hash;
+};
 
 # Public query method
 sub query {
@@ -69,80 +126,35 @@ sub query {
 	if(defined $query) {
 		$t->('last_query', $t->('query'));
 		$t->('query', $query);
-		$ret = $t->_exec();
+		$ret = &$_exec($t);
 		$t->('rows_affected', $ret);
-		$t->('result_hash', $t->_build_hash());
+		$t->('result_hash', &$_build_hash($t));
 	}
 	return $ret;
 }
 
-sub _get_col {
+sub get_col {
 	my $t = t(\@_);
 	my $hash = $t->('result_hash');
 	my $col = shift;
 	my $value = '';
-	if(ref $hash eq "HASH"
+	if(ref $hash eq 'HASH'
 	&& defined $col) {
 		if(exists $hash->{$col}) {
 			$value = $hash->{$col}
 		} else {
-			print "No column named $col\n";
+			$value = "No column named $col";
 		}
 	} else {
-		warn 'Access of no result';
+		$value = 'Access of no result';
+		warn $value;
 	}
+	
+	if(!$value) {
+		$value = '';
+	}
+	
 	return $value;
-}
-
-# Build a hash reference with columns and values
-# This is what is returned to the querier
-sub _build_hash {
-	my $t = t(\@_);
-	my @r = @{$t->('result')};
-	my %hash;
-	my $index = 0;
-	for my $col (@{$t->('result_columns')}) {
-		$hash{$col} = $r[$index];
-		$index++;
-	}
-	return \%hash;
-}
-
-sub _exec {
-	my $t = t(\@_);
-	my $db = $t->_con();
-	
-	my $sth = $db->prepare($t->('query'));
-	if(!$sth) {
-		die("no statement");
-	}
-	
-	my $ret = $sth->execute();
-	$t->('last_result', $t->('result'));
-	$t->('result', $sth->fetch());
-	$t->('result_columns', $sth->{NAME});
-	
-	$sth->finish();
-	$db = $t->_discon();
-	return $ret;
-}
-
-sub _con {
-	my $t = t(\@_);
-	return $t->('dbh', DBI->connect(
-		'dbi:' .$t->('dbi')
-		.':dbname=' .$t->('dbname'),
-		'',
-		'',
-		{ RaiseError => 1}
-	));
-}
-
-sub _discon {
-	my $t = t(\@_);
-	my $db = $t->('dbh');
-	$db->disconnect();
-	return $t->('dbh', undef);
 }
 
 sub t {

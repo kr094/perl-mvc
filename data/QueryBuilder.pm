@@ -1,9 +1,12 @@
+use lib '../modules/common';
+use lib '../modules/QueryBuilder';
 package QueryBuilder;
+
 use strict;
 use warnings;
-
-use lib '../modules/common';
 use Data;
+use QueryFields;
+
 use Trim;
 
 sub new {	
@@ -158,7 +161,7 @@ sub query {
 	my $t = shift;
 	my $data = $t->{_data};
 	$data->query('SELECT SQLITE_VERSION() as version');
-	print $data->_get_col('version') ."\n";
+	print $data->get_col('version') ."\n";
 }
 
 sub test {
