@@ -27,7 +27,7 @@ sub test_where {
 
 sub test {
 	my $which_hash = shift;	
-	$q->test($q->{$which_hash});
+	print $q->test($q->{$which_hash});
 }
 
 $q->query();

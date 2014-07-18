@@ -119,17 +119,18 @@ sub test {
 	my $hash = shift;
 	my $fields = $hash->{fields};
 	my $values = $hash->{values};
+	my $field;
 	my $value;
-	
-	for(values $fields) {
-		$value = $values->{$_};
+	my $test_result = "";
+			
+	for(keys $fields) {
+		$field = $fields->[$_];
+		$value = $values->[$_];
 		
-		if(ref $value eq 'ARRAY') {
-			print "$_ => @$value\n";
-		} else {
-			print "$_ => $value\n";
-		}
+		$test_result .= "$field => $value\n";
 	}
+	
+	return $test_result;
 }
 
 return 1;

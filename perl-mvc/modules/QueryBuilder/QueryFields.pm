@@ -9,40 +9,38 @@ sub add_field {
 	my $fields = $hash->{fields};
 	my $values = $hash->{values};
 	
-	if(!$field) {
+	if(!defined $field) {
 		$field = '';
-	} elsif(!$value) {
+	} elsif(!defined $value) {
 		$value = '';
 	}
 	
-	# If this key is already defined
-	# Yank it out of the fields
-	if(exists $values->{$field}) {
-		yank($fields, $field);
-		$values->{$field} = [$field];
-	}
-	
-	# Put it on the end
-	push(@$fields, $field);
-		
-	# Update the assoc value
-	if(ref $values->{$field} eq 'ARRAY') {
-		push($values->{$field}, $value);
+	if(in_array($fields, $field)) {
+		splice_by_field($fields, $values, $field, $value);
 	} else {
-		$values->{$field} = $value;
+		push(@$fields, $field);
+		push(@$values, $value);
 	}
 }
 
-# Splice an element by value
-sub yank {
-	# Scalar reference to array
-	my $fields = shift;
-	my $field = shift;
+sub in_array {
+	my $array = shift;
+	my $value = shift;
 	
-	# (Number of scalars in)array or $array ref
-	for(0 .. $#$fields) {
+	my %hash = map {$_ => 1} @$array;
+	return(exists $hash{$value});
+}
+
+sub splice_by_field {
+	my $fields = shift;
+	my $values = shift;
+	my $field = shift;
+	my $new_value = shift;
+	
+	for($#$fields .. 0) {
 		if($field eq $fields->[$_]) {
-			splice(@$fields, $_, 1);
+			splice($fields, $_ + 1, 0, $field);
+			splice($values, $_ + 1, 0, $new_value);
 			last;
 		}
 	}
@@ -51,21 +49,7 @@ sub yank {
 sub new_field {
 	return {
 		fields => [],
-		values => {}
-	};
-}
-
-sub new_from {
-	return {
-		tables => [],
-		join_tables => {} # Entries like table => join_on during a join
-	};
-}
-
-sub join_on {
-	return {
-		join => 'inner',
-		on => new_field()
+		values => []
 	};
 }
 
