@@ -26,9 +26,16 @@ sub add_field {
 sub in_array {
 	my $array = shift;
 	my $value = shift;
+	my $in_array = 0;
 	
-	my %hash = map {$_ => 1} @$array;
-	return(exists $hash{$value});
+	for(values $array) {
+		if($value eq $_) {
+			$in_array = 1;
+			last;
+		}
+	}
+
+	return $in_array;
 }
 
 sub splice_by_field {
@@ -37,13 +44,15 @@ sub splice_by_field {
 	my $field = shift;
 	my $new_value = shift;
 	
-	for($#$fields .. 0) {
+	# Perl does not support high .. low
+	for(reverse 0 .. $#$fields) {
 		if($field eq $fields->[$_]) {
 			splice($fields, $_ + 1, 0, $field);
 			splice($values, $_ + 1, 0, $new_value);
 			last;
 		}
 	}
+	
 }
 
 sub new_field {

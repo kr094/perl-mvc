@@ -8,8 +8,7 @@ my $q = new QueryBuilder();
 
 sub test_select {
 	print "Testing Select\n";
-	$q->select('data as alias')
-		->select('data as newAlias');
+	$q->select('data, data, data');
 		
 	test('select');
 }
