@@ -29,17 +29,20 @@ sub new {
 	my $_get = sub {
 		my $_m = shift;
 		my $_v = undef;
+		
 		if(defined $_m 
 		&& exists $_self->{$_m} 
 		&& defined $_self->{$_m}) {
 			$_v = $_self->{$_m};
 		}
+		
 		return $_v;
 	};
 	
 	# Set a variable if there is a key for it
 	my $_set = sub {
 		my $_m = shift;
+		
 		if(exists $_self->{$_m}) {
 			$_self->{$_m} = shift;
 		}
@@ -48,6 +51,7 @@ sub new {
 	my $_public = sub {
 		my $_m = shift;
 		my $_v = '';
+		
 		if(@_) {
 			$_set->($_m, @_);
 			$_v = $_get->($_m);
@@ -66,39 +70,20 @@ sub new {
 
 my $_con = sub {
 	my $t = shift;
+	
 	return $t->('dbh', DBI->connect(
-		'dbi:' .$t->('dbi')
-		.':dbname=' .$t->('dbname'),
+		'dbi:' .$t->('dbi') .':dbname=' .$t->('dbname'),
 		'',
 		'',
-		{ RaiseError => 1}
+		{RaiseError => 1}
 	));
 };
 
 my $_discon = sub {
 	my $t = shift;
-	my $db = $t->('dbh');
-	$db->disconnect();
+	
+	$t->('dbh')->disconnect();
 	return $t->('dbh', undef);
-};
-
-my $_exec = sub {
-	my $t = shift;
-	my $db = &$_con($t);
-	
-	my $sth = $db->prepare($t->('query'));
-	if(!$sth) {
-		die('no statement');
-	}
-	
-	my $ret = $sth->execute();
-	$t->('last_result', $t->('result'));
-	$t->('result', $sth->fetch());
-	$t->('result_columns', $sth->{NAME});
-	
-	$sth->finish();
-	$db = &$_discon($t);
-	return $ret;
 };
 
 # Build a hash reference with columns and values
@@ -118,20 +103,44 @@ my $_build_hash = sub {
 	return \%hash;
 };
 
+# This method needs to have all its dependencies in scope
+my $_exec = sub {
+	my $t = shift;
+	my $db = &$_con($t);
+	my $sth = undef;
+	my $ret = 0;
+	
+	$sth = $db->prepare($t->('query'));
+	if(!$sth) {
+		die('no statement');
+	}
+	
+	$ret = $sth->execute();
+	if(!$ret || undef $ret) {
+		$ret = 0;
+	}
+	
+	$t->('rows_affected', $ret);
+	$t->('last_result', $t->('result'));
+	$t->('result', $sth->fetch());
+	$t->('result_columns', $sth->{NAME});
+	$t->('result_hash', &$_build_hash($t));
+	
+	$sth->finish();
+	$db = &$_discon($t);
+};
+
 # Public methods #
 # Calls to t use This.pm to ensure an object reference
 sub query {
 	my $t = t(\@_);
 	my $query = shift;
-	my $ret = 0;
+	
 	if(defined $query) {
 		$t->('last_query', $t->('query'));
 		$t->('query', $query);
-		$ret = &$_exec($t);
-		$t->('rows_affected', $ret);
-		$t->('result_hash', &$_build_hash($t));
+		&$_exec($t);
 	}
-	return $ret;
 }
 
 sub get_col {
@@ -139,6 +148,7 @@ sub get_col {
 	my $hash = $t->('result_hash');
 	my $col = shift;
 	my $value = '';
+	
 	if(ref $hash eq 'HASH'
 	&& defined $col) {
 		if(exists $hash->{$col}) {
