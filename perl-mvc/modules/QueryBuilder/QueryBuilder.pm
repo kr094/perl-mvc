@@ -27,8 +27,9 @@ sub new {
 sub select {
 	my $t = shift;
 	my $hash = $t->{select};
+	my $ref;	
+	
 	$t->{type} = 'select';
-	my $ref;
 	
 	for(@_) {
 		$ref = ref;
@@ -45,11 +46,12 @@ sub select {
 sub where {
 	my $t = shift;
 	my $hash = $t->{where};
+	my $query = undef;
 	my $field = '';
 	my $value = '';
 	
 	while(@_) {
-		my $query = shift;
+		$query = shift;
 		
 		if(ref $query eq 'HASH') {
 			build_from_hash($hash, $query);
@@ -125,8 +127,7 @@ sub test {
 			
 	for(keys $fields) {
 		$field = $fields->[$_];
-		$value = $values->[$_];
-		
+		$value = $values->[$_];		
 		$test_result .= "$field => $value\n";
 	}
 	

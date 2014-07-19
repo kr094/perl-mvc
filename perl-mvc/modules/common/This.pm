@@ -1,17 +1,20 @@
 package This;
 use lib './';
-use Er;
+use Err;
 
 # Access control, raise an error if we don't have this
 sub t {
-	my $t = shift;
-	my $_this = shift;
+	my $this = shift;
+	my $type = shift;
+	
 	# Shift this from the referenced @_
-	$t = shift @{$t};
-	if(!is_this($t, $_this)) {
-		Er::r('no init');
+	$this = shift @{$this};
+	
+	if(is_this($this, $type)) {
+		Err::e("Missing object reference for class $type.\n(Did you call new?)");
 	}
-	return $t;
+	
+	return $this;
 }
 
 sub is_this {
