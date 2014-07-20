@@ -2,16 +2,16 @@ package This;
 use lib './';
 use Err;
 
-# Access control, raise an error if we don't have this
+# Access control
 sub t {
 	my $this = shift;
 	my $type = shift;
 	
-	# Shift this from the referenced @_
+	# Remove implicit object from callers @_ by reference
 	$this = shift @{$this};
 	
-	if(is_this($this, $type)) {
-		Err::e("Missing object reference for class $type.\n(Did you call new?)");
+	if(!is_this($this, $type)) {
+		Err::e("Missing object reference for class $type.\n");
 	}
 	
 	return $this;
