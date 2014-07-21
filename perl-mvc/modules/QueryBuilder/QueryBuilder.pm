@@ -6,7 +6,6 @@ use lib('../modules/common', '../modules/Data', '../modules/Dictionary');
 use Data;
 use Dictionary;
 use ExprDictionary;
-use Trim;
 
 sub new {	
 	my $_type = shift;
@@ -14,9 +13,9 @@ sub new {
 	
 	my $_self = {
 		_data => new Data(),
-		select => Dictionary::new(),
-		where => Dictionary::new(),
-		from => ExprDictionary::new(),
+		select => new Dictionary(),
+		where => new Dictionary(),
+		from => new ExprDictionary(),
 		type => '',
 		limit => 0
 	};

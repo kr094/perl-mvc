@@ -1,18 +1,17 @@
 package ExprDictionary;
-use lib('./');
 use Dictionary;
 
 sub new {
-	return {
+	return bless {
 		expr => [],
-		dict => Dictionary::new()
-	}
+		dict => new Dictionary()
+	}, shift;
 }
 
 sub add {
-	my $expr = shift;
-	my $field = shift;
-	my $value = shift;
+	my $new_expr = shift;
+	my $new_field = shift;
+	my $new_value = shift;
 }
 
 return 1;

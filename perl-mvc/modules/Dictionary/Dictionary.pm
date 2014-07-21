@@ -1,15 +1,12 @@
 package Dictionary;
-use lib('./');
 use Helpers;
+use Trim;
 
 sub new {
-	my $type = shift;
-	my $class = ref $type || $type;
-	
 	return bless {
 		field => [],
 		value => []
-	}, $class;
+	}, shift;
 }
 
 sub add {
@@ -26,12 +23,33 @@ sub add {
 	}
 	
 	if(Helpers::in_array($field_set, $field)) {
-		Helpers::splice_by_field($field_set, $value_set, $field, $value);
+		splice_by_field($field_set, $value_set, $field, $value);
 	} else {
 		# todo: Index alphabetical
 		push(@$field_set, $field);
 		push(@$value_set, $value);
 	}
+}
+
+# Indexed by unique field
+sub splice_by_field {
+	my $fields = shift;
+	my $values = shift;
+	my $field = shift;
+	my $new_value = shift;
+	
+	# Walk array backwards 
+	# Find the last index for this field
+	# Splice in the new value
+	
+	# Perl does not support high .. low
+	for(reverse 0 .. $#$fields) {
+		if($field eq $fields->[$_]) {
+			splice($fields, $_ + 1, 0, $field);
+			splice($values, $_ + 1, 0, $new_value);
+			last;
+		}
+	}	
 }
 
 return 1;
