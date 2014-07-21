@@ -1,0 +1,31 @@
+and(s.data like '%data%' or s.data like '%data2%' or(s.data like '%data3%' or s.data like '%data4%'))
+
+{
+	[and],
+	{
+		[simple],
+		[set]
+	}
+}
+
+{
+	[and, or, or],
+	# expr_relation
+	{
+		[like, like, $new_expr()],
+		# field
+		{
+			[s.data, s.data]
+			['%data%', '%data2%']
+		}
+	}
+}
+
+read_expr
+if(expr is a hash)
+read_expr($the_hash) // recursive
+
+expr_relation {
+	expr => [],
+	relation => new_field()
+}
