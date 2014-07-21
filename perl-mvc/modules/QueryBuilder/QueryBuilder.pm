@@ -2,9 +2,10 @@ package QueryBuilder;
 use strict;
 use warnings;
 
-use lib('../modules/common', '../modules/Data/');
+use lib('../modules/common', '../modules/Data', '../modules/Dictionary');
 use Data;
-use QueryFields;
+use Dictionary;
+use ExprDictionary;
 use Trim;
 
 sub new {	
@@ -13,9 +14,9 @@ sub new {
 	
 	my $_self = {
 		_data => new Data(),
-		select => QueryFields::new_field(),
-		where => QueryFields::new_field(),
-		from => QueryFields::new_from(),
+		select => Dictionary::new(),
+		where => Dictionary::new(),
+		from => ExprDictionary::new(),
 		type => '',
 		limit => 0
 	};
@@ -58,7 +59,7 @@ sub where {
 		} else {		
 			$field = $query;
 			$value = shift;
-			QueryFields::add_field($hash, $field, $value);
+			Dictionary::add($hash, $field, $value);
 		}
 	}
 	
@@ -72,7 +73,7 @@ sub build_from_hash {
 	
 	for(keys $query) {
 		$value = $query->{$_};
-		QueryFields::add_field($hash, $_, $value);
+		Dictionary::add($hash, $_, $value);
 	}
 }
 
@@ -106,7 +107,7 @@ sub split_select {
 		$field = $query;
 	}
 	
-	QueryFields::add_field($hash, $field, $value);
+	Dictionary::add($hash, $field, $value);
 }
 
 sub query {
@@ -119,8 +120,8 @@ sub query {
 sub test {
 	my $t = shift;
 	my $hash = shift;
-	my $fields = $hash->{fields};
-	my $values = $hash->{values};
+	my $fields = $hash->{field};
+	my $values = $hash->{value};
 	my $field;
 	my $value;
 	my $test_result = "";
