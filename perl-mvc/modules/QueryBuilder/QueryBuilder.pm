@@ -58,7 +58,7 @@ sub where {
 		} else {		
 			$field = $query;
 			$value = shift;
-			Dictionary::add($hash, $field, $value);
+			$hash->add($field, $value);
 		}
 	}
 	
@@ -72,7 +72,7 @@ sub build_from_hash {
 	
 	for(keys $query) {
 		$value = $query->{$_};
-		Dictionary::add($hash, $_, $value);
+		$hash->add($_, $value);
 	}
 }
 
@@ -106,7 +106,7 @@ sub split_select {
 		$field = $query;
 	}
 	
-	Dictionary::add($hash, $field, $value);
+	$hash->add($field, $value);
 }
 
 sub query {
