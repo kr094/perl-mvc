@@ -1,0 +1,19 @@
+select s.date, s.time, si.price from sales s left join sales_items si on (s.sale_id = si.sale_id AND s.customer_id = si.customer_id) where s.date >= '2014-05-06' and(s.time >= '12' or is_null(s.time)) and(s.data like '%data%' or s.data like '%data2%')
+
+generic and & or methods
+track last_call
+add a clause to the last called field
+
+{
+	expr => [],
+	cond => new_field()
+}
+
+# Abandon sql syntax order
+# Supports whatever syntax
+select('s.date date, s.time as time', 'si.price')
+where('s.date >=', '2014-05-06')
+from('sales s')
+join('sales_items si', 'left')
+where(qw(s.sale_id si.sale_id))
+and(qw(s.customer_id si.customer_id));

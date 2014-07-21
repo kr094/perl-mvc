@@ -1,0 +1,14 @@
+
+	# if(defined $_[0]) {
+		# my $t = shift;
+		# $t = shift @{$t};
+		# if(ref $t eq __PACKAGE__) {
+			# return $t;
+		# }
+		# else {
+			# _err('no package init');
+		# }
+	# }
+	# else {
+		# _err('no init');
+	# }

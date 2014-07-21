@@ -1,0 +1,6 @@
+sub select {
+	my $t = shift;
+	for(@_) {
+		print;
+	}
+}

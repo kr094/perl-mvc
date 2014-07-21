@@ -2,6 +2,7 @@ package QueryFields;
 use strict;
 use warnings;
 
+# This is basically a manual dictionary
 sub add_field {
 	my $hash = shift;
 	my $field = Trim::trim(shift);
@@ -18,6 +19,7 @@ sub add_field {
 	if(in_array($fields, $field)) {
 		splice_by_field($fields, $values, $field, $value);
 	} else {
+		# todo: Index alphabetical
 		push(@$fields, $field);
 		push(@$values, $value);
 	}
@@ -38,6 +40,7 @@ sub in_array {
 	return $in_array;
 }
 
+# Each unique field gets its own index
 sub splice_by_field {
 	my $fields = shift;
 	my $values = shift;
@@ -54,6 +57,14 @@ sub splice_by_field {
 	}	
 }
 
+sub new_field {
+	return {
+		fields => [],
+		values => []
+	};
+}
+
+# If theres more than one from field, start adding/reading join_ons..?
 sub new_from {
 	return {
 		from => new_field(),
@@ -65,13 +76,6 @@ sub new_join_on {
 	return {
 		joins => [],
 		on => new_field()
-	};
-}
-
-sub new_field {
-	return {
-		fields => [],
-		values => []
 	};
 }
 

@@ -1,0 +1,91 @@
+_build_from_string
+_build_from_hash
+
+field_constructor = {
+	fields = []
+	values = []
+	hash = {
+		field => value
+	}
+}
+
+return a reference to
+build fields, aliases, add a hash entry
+
+sub get_constructor {
+	return {
+		fields => [],
+		values => [],
+		hash => {}
+	}
+}
+
+###
+
+sub query {
+	my $t = shift;
+	my $query = shift;
+	my $ref = ref $query;
+	my $hash = $t->{query};
+	
+	if($ref eq 'HASH') {
+		build_from_hash($hash, $query);
+	} elsif($ref eq '') {
+		build_from_string($hash, $query);
+	}
+}
+
+sub build_from_string {	
+	my $hash = shift;
+	my $query = Trim::trim(shift);
+	my @split = undef;
+	my @field_strings = ();
+	
+	if($query =~ /,/) {
+		@split = split(/\s*,\s+/, $query);
+		@field_strings = @split;
+	} else {
+		push(@field_strings, $query);
+	}
+	
+	my $field = '';
+	my $value = '';
+	for (@field_strings) {
+		if($_ =~ /\s/) {
+			if($_ =~ /\s+as\s+/) {
+				@split = split(/\s+as\s+/, $_);
+				$field = shift @split;
+				$value = shift @split;
+			} else {
+				next;
+			}
+		} elsif($_ ne '') {
+			$field = $_;
+		} else {
+			next;
+		}
+		add_field($hash, $field, $value);
+	}
+}
+
+sub build_from_hash {
+
+}
+
+sub add_field {
+	my $hash = shift;
+	my $field = shift;
+	my $value = shift;
+	
+	push(@{$hash->{fields}}, $field);
+	push(@{$hash->{values}}, $value);
+	$hash->{hash}{$field} = $value;
+}
+
+sub new_field {
+	return {
+		fields => [],
+		values => [],
+		hash => {}
+	}
+}
