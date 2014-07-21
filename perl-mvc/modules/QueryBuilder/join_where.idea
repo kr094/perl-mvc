@@ -1,0 +1,14 @@
+select s.date, s.time, si.price from sales s left join sales_items si on (s.sale_id = si.sale_id AND s.customer_id = si.customer_id) where s.date >= '2014-05-06' and s.time >= '12' or is_null(s.time);
+
+generic and & or methods
+track last_call
+add a clause to the last called field
+
+from('a_table')
+join('b_table', 'left') // inner by default
+where('a.id', b.id') // last_call
+and('a.date >=', '2014-05-06')
+and('(a.date', '2014')
+and('b.date', undef) //is_null?
+expr('and(a.date >= '2014' or b.date = null)')
+

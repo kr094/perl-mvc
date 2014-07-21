@@ -15,8 +15,8 @@ sub new {
 		_data => new Data(),
 		select => QueryFields::new_field(),
 		where => QueryFields::new_field(),
+		from => QueryFields::new_from(),
 		type => '',
-		from => '',
 		limit => 0
 	};
 	

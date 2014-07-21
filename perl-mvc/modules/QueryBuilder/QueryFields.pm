@@ -51,8 +51,21 @@ sub splice_by_field {
 			splice($values, $_ + 1, 0, $new_value);
 			last;
 		}
-	}
-	
+	}	
+}
+
+sub new_from {
+	return {
+		from => new_field(),
+		join_on => new_join_on()
+	};
+}
+
+sub new_join_on {
+	return {
+		joins => [],
+		on => new_field()
+	};
 }
 
 sub new_field {
