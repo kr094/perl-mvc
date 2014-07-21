@@ -106,7 +106,7 @@ my $_build_hash = sub {
 # This method needs to have all its dependencies in scope
 my $_exec = sub {
 	my $t = shift;
-	my $db = &$_con($t);
+	my $db = $_con->($t);
 	my $sth = undef;
 	my $ret = 0;
 	
@@ -124,14 +124,15 @@ my $_exec = sub {
 	$t->('last_result', $t->('result'));
 	$t->('result', $sth->fetch());
 	$t->('result_columns', $sth->{NAME});
-	$t->('result_hash', &$_build_hash($t));
+	$t->('result_hash', $_build_hash->($t));
 	
 	$sth->finish();
-	$db = &$_discon($t);
+	$db = $_discon->($t);
 };
 
 # Public methods #
-# Calls to t use This.pm to ensure an object reference
+
+# Calls to t use This to ensure an object reference
 sub query {
 	my $t = t(\@_);
 	my $query = shift;
@@ -139,7 +140,7 @@ sub query {
 	if(defined $query) {
 		$t->('last_query', $t->('query'));
 		$t->('query', $query);
-		&$_exec($t);
+		$_exec->($t);
 	}
 }
 

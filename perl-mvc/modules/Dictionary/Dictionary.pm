@@ -3,10 +3,13 @@ use lib('./');
 use Helpers;
 
 sub new {
-	return {
+	my $type = shift;
+	my $class = ref $type || $type;
+	
+	return bless {
 		field => [],
 		value => []
-	}
+	}, $class;
 }
 
 sub add {
