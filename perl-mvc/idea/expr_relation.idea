@@ -1,5 +1,47 @@
+# Abandon sql syntax order
+# Supports whatever syntax
+select('s.date date, s.time as time', 'si.price')
+where('s.date >=', '2014-05-06')
+and('(s.time >=', 12)
+or(')s.time', undef)
+from('sales s')
+join('sales_items si', 'left')
+where(qw(s.sale_id si.sale_id))
+and(qw(s.customer_id si.customer_id));
+
+# This builds a structure like
+select {
+	{
+		[s.date, s.time, si.price],
+		[date, time, '']
+	}
+}
+from {
+	{
+		[sales, sales_items],
+		[s, si]
+	},
+	{
+		[left],
+		{
+			[s.sale_id, s.customer_id],
+			[si.sale_id, si.customer_id]
+		}
+	}
+}
+where {
+	{
+		[>=],
+		{
+			[s.date],
+			[2014-05-06]
+		}
+	}
+}
+
 and(s.data like '%data%' or s.data like '%data2%' or(s.data like '%data3%' or s.data like '%data4%'))
 
+#expr relation
 {
 	[and],
 	{
@@ -8,6 +50,8 @@ and(s.data like '%data%' or s.data like '%data2%' or(s.data like '%data3%' or s.
 	}
 }
 
+#nested expr
+#and or methods with ( use this
 {
 	[and, or, or],
 	# expr_relation

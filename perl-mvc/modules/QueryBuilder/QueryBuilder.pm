@@ -6,6 +6,7 @@ use lib('../modules/common', '../modules/Data', '../modules/Dictionary');
 use Data;
 use Dictionary;
 use ExprDictionary;
+use Trim;
 
 sub new {	
 	my $_type = shift;
@@ -14,8 +15,11 @@ sub new {
 	my $_self = {
 		_data => new Data(),
 		select => new Dictionary(),
-		where => new Dictionary(),
-		from => new ExprDictionary(),
+		where => new ExprDictionary(),
+		from => {
+			from => new Dictionary(),
+			join => new ExprDictionary()
+		},
 		type => '',
 		limit => 0
 	};
@@ -26,7 +30,7 @@ sub new {
 
 sub select {
 	my $t = shift;
-	my $hash = $t->{select};
+	my $dict = $t->{select};
 	my $ref;	
 	
 	$t->{type} = 'select';
@@ -34,9 +38,9 @@ sub select {
 	for(@_) {
 		$ref = ref;
 		if($ref eq 'HASH') {
-			build_from_hash($hash, $_);
+			build_from_dict($dict, $_);
 		} elsif($ref eq '') {
-			build_select($hash, $_);
+			build_select($dict, $_);
 		}
 	}
 	
@@ -45,39 +49,55 @@ sub select {
 
 sub where {
 	my $t = shift;
-	my $hash = $t->{where};
+	my $dict = $t->{where};
 	my $query = undef;
 	my $field = '';
 	my $value = '';
+	my $equality = '';
 	
 	while(@_) {
 		$query = shift;
 		
 		if(ref $query eq 'HASH') {
-			build_from_hash($hash, $query);
+			build_from_dict($dict, $query);
 		} else {		
 			$field = $query;
 			$value = shift;
-			$hash->add($field, $value);
+			
+			$equality = parse_equality($field);
+			$dict->add($equality, $field, $value);
 		}
 	}
 	
 	return $t;
 }
 
-sub build_from_hash {
-	my $hash = shift;
+sub build_from_dict {
+	my $dict = shift;
 	my $query = shift;
 	my $value;
 	
 	for(keys $query) {
 		$value = $query->{$_};
-		$hash->add($_, $value);
+		$dict->add($_, $value);
 	}
 }
 
+sub parse_equality {
+	my $field = Trim::trim(shift);
+	my @split = ();
+	my $equality = '=';
+	
+	if($field =~ /[<>=]/) {
+		@split = split(/\s+/, $field, 2);
+		$equality = $split[1];
+	}
+	
+	return $equality;
+}
+
 sub build_select {
-	my $hash = shift;
+	my $dict = shift;
 	my $query = shift;
 	my @strings = ();
 	
@@ -88,12 +108,12 @@ sub build_select {
 	}
 	
 	for(@strings) {
-		split_select($hash, $_);
+		split_select($dict, $_);
 	}
 }
 
 sub split_select {
-	my $hash = shift;
+	my $dict = shift;
 	my $query = shift;
 	my $field = '';
 	my $value = '';
@@ -106,7 +126,7 @@ sub split_select {
 		$field = $query;
 	}
 	
-	$hash->add($field, $value);
+	$dict->add($field, $value);
 }
 
 sub query {
@@ -118,9 +138,9 @@ sub query {
 
 sub test {
 	my $t = shift;
-	my $hash = shift;
-	my $fields = $hash->{field};
-	my $values = $hash->{value};
+	my $dict = shift;
+	my $fields = $dict->{field};
+	my $values = $dict->{value};
 	my $field;
 	my $value;
 	my $test_result = "";
