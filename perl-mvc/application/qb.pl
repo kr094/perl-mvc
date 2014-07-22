@@ -24,7 +24,7 @@ sub test_where {
 
 sub test {
 	my $which_hash = shift;	
-	return $q->test($q->{$which_hash});
+	return $q->{$which_hash}->print();
 }
 
 sub run_test {
@@ -35,7 +35,7 @@ sub run_test {
 	."Testing Select\n"
 	.test_select() ."\n"
 	."Testing Where\n"
-	#.test_where() ."\n"
+	.test_where() ."\n"
 	."Completed in "
 	.sprintf("%.2f", time() - $start)
 	."ms";

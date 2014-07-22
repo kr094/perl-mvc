@@ -69,4 +69,21 @@ sub splice_dictionary {
 	}	
 }
 
+sub print {
+	my $dict = shift;
+	my $fields = $dict->{field};
+	my $values = $dict->{value};
+	my $field;
+	my $value;
+	my $print = "";
+			
+	for(keys $fields) {
+		$field = $fields->[$_];
+		$value = $values->[$_];		
+		$print .= "$field => $value\n";
+	}
+	
+	return $print;
+}
+
 return 1;

@@ -59,7 +59,7 @@ sub where {
 		$query = shift;
 		
 		if(ref $query eq 'HASH') {
-			build_from_dict($dict, $query);
+			build_from_hash($dict, $query);
 		} else {		
 			$field = $query;
 			$value = shift;
@@ -70,17 +70,6 @@ sub where {
 	}
 	
 	return $t;
-}
-
-sub build_from_dict {
-	my $dict = shift;
-	my $query = shift;
-	my $value;
-	
-	for(keys $query) {
-		$value = $query->{$_};
-		$dict->add($_, $value);
-	}
 }
 
 sub parse_equality {
@@ -134,24 +123,6 @@ sub query {
 	my $data = $t->{_data};
 	$data->query('SELECT SQLITE_VERSION() as version');
 	return $data->get_col('version') ."\n";
-}
-
-sub test {
-	my $t = shift;
-	my $dict = shift;
-	my $fields = $dict->{field};
-	my $values = $dict->{value};
-	my $field;
-	my $value;
-	my $test_result = "";
-			
-	for(keys $fields) {
-		$field = $fields->[$_];
-		$value = $values->[$_];		
-		$test_result .= "$field => $value\n";
-	}
-	
-	return $test_result;
 }
 
 return 1;
