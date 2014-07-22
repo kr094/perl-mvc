@@ -32,8 +32,8 @@ sub add {
 
 sub push_dictionary {
 	my $dict = shift;
-	my $field = Trim::trim(shift);
-	my $value = Trim::trim(shift);
+	my $field = shift;
+	my $value = shift;
 	my $field_set = $dict->{field};
 	my $value_set = $dict->{value};
 	

@@ -113,7 +113,7 @@ sub query {
 	my $t = shift;
 	my $data = $t->{_data};
 	$data->query('SELECT SQLITE_VERSION() as version');
-	print $data->get_col('version') ."\n";
+	return $data->get_col('version') ."\n";
 }
 
 sub test {

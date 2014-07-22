@@ -1,5 +1,6 @@
 package ExprDictionary;
 use Dictionary;
+use Trim;
 
 sub new {
 	return bless {
@@ -10,9 +11,9 @@ sub new {
 
 sub add {
 	my $expr_dict = shift;
-	my $expr = shift;
-	my $field = shift;
-	my $value = shift;
+	my $expr = Trim::trim(shift);
+	my $field = Trim::trim(shift);
+	my $value = Trim::trim(shift);
 	
 	my $expr = $expr_dict->{expr};
 	my $dict = $expr_dict->{dict};
