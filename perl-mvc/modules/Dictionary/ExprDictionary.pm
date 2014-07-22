@@ -1,7 +1,6 @@
 package ExprDictionary;
 use Dictionary;
 use Trim;
-use Data::Dumper;
 
 sub new {
 	return bless {
@@ -27,17 +26,6 @@ sub add {
 	$dict->push_dictionary($field, $value);
 }
 
-sub build_from_hash {
-	my $dict = shift;
-	my $query = shift;
-	my $value;
-	
-	for(keys $query) {
-		$value = $query->{$_};
-		$dict->add($_, $value);
-	}
-}
-
 sub print {
 	my $ed = shift;
 	my $expr_set = $ed->{expr};
@@ -49,13 +37,11 @@ sub print {
 	my $value = '';
 	my $print = '';
 	
-	print Dumper($ed);
-	
 	for(0 .. $#$expr_set) {
-		$expr = $expr_set[$_];
-		$field = $field_set[$_];
-		$value = $value_set[$_];
-		$print .= "$field $expr $value";
+		$expr = $expr_set->[$_];
+		$field = $field_set->[$_];
+		$value = $value_set->[$_];
+		$print .= "$field $expr $value\n";
 	}
 	
 	return $print;

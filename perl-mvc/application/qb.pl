@@ -13,7 +13,7 @@ sub test_select {
 }
 
 sub test_where {
-	$q->where('data >=', 23)
+	$q->where('data >', 23)
 		->where(1, 2, 3, 4)
 		->where('kittens', undef)
 		->where({hash => 'test'})

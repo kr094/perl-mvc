@@ -54,17 +54,27 @@ sub where {
 	my $field = '';
 	my $value = '';
 	my $equality = '';
+	my @split = ();
 	
 	while(@_) {
 		$query = shift;
 		
 		if(ref $query eq 'HASH') {
-			build_from_hash($dict, $query);
+			for(keys $query) {
+				$value = $query->{$_};
+				
+				@split = parse_equality($_);
+				$field = shift @split;
+				$equality = shift @split;
+				$dict->add($equality, $_, $value);
+			}
 		} else {		
 			$field = $query;
 			$value = shift;
 			
-			$equality = parse_equality($field);
+			@split = parse_equality($field);
+			$field = shift @split;
+			$equality = shift @split;
 			$dict->add($equality, $field, $value);
 		}
 	}
@@ -75,14 +85,15 @@ sub where {
 sub parse_equality {
 	my $field = Trim::trim(shift);
 	my @split = ();
-	my $equality = '=';
 	
 	if($field =~ /[<>=]/) {
 		@split = split(/\s+/, $field, 2);
-		$equality = $split[1];
+	} else {
+		push(@split, $field);
+		push(@split, '=');
 	}
 	
-	return $equality;
+	return @split;
 }
 
 sub build_select {
