@@ -1,5 +1,5 @@
 package Dictionary;
-use Helpers;
+use ArrayHelpers;
 use Trim;
 
 sub new {
@@ -22,7 +22,7 @@ sub add {
 		$value = '';
 	}
 	
-	if(Helpers::in_array($field_set, $field)) {
+	if(ArrayHelpers::in($field_set, $field)) {
 		splice_dictionary($field_set, $value_set, $field, $value);
 	} else {
 		# todo: Index alphabetical

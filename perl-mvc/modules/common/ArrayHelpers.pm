@@ -1,18 +1,18 @@
-package Helpers;
+package ArrayHelpers;
 
-sub in_array {
+sub in {
 	my $array = shift;
 	my $value = shift;
-	my $in_array = 0;
+	my $in = 0;
 	
 	for(values $array) {
 		if($value eq $_) {
-			$in_array = 1;
+			$in = 1;
 			last;
 		}
 	}
 
-	return $in_array;
+	return $in;
 }
 
 return 1;
