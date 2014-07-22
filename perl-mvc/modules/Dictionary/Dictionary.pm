@@ -23,7 +23,7 @@ sub add {
 	}
 	
 	if(ArrayHelpers::in($field_set, $field)) {
-		splice_dictionary($field_set, $value_set, $field, $value);
+		$dict->splice_dictionary($field, $value);
 	} else {
 		# todo: Index alphabetical
 		$dict->push_dictionary($field, $value);
@@ -49,10 +49,11 @@ sub push_dictionary {
 
 # Indexed by unique field
 sub splice_dictionary {
-	my $field_set = shift;
-	my $value_set = shift;
+	my $dict = shift;
 	my $field = shift;
-	my $new_value = shift;
+	my $value = shift;
+	my $field_set = $dict->{field};
+	my $value_set = $dict->{value};
 	
 	# Walk array backwards 
 	# Find the last index for this field
@@ -62,7 +63,7 @@ sub splice_dictionary {
 	for(reverse 0 .. $#$field_set) {
 		if($field eq $field_set->[$_]) {
 			splice($field_set, $_ + 1, 0, $field);
-			splice($value_set, $_ + 1, 0, $new_value);
+			splice($value_set, $_ + 1, 0, $value);
 			last;
 		}
 	}	
