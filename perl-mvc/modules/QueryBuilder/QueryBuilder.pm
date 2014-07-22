@@ -89,8 +89,7 @@ sub parse_equality {
 	if($field =~ /[<>=]/) {
 		@split = split(/\s+/, $field, 2);
 	} else {
-		push(@split, $field);
-		push(@split, '=');
+		push(@split, $field, '=');
 	}
 	
 	return @split;
