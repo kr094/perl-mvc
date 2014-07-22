@@ -16,15 +16,13 @@ sub add {
 	
 	my $expr = $expr_dict->{expr};
 	my $dict = $expr_dict->{dict};
-	my $field_set = $dict->{field};
-	my $value_set = $dict->{value};
 	
 	if(!defined $expr) {
 		$expr = '';
 	}
 	
 	push(@$expr, $expr);
-	$dict->push($field_set, $value_set, $field, $value);
+	$dict->push_dictionary($field, $value);
 	
 }
 

@@ -23,15 +23,14 @@ sub add {
 	}
 	
 	if(Helpers::in_array($field_set, $field)) {
-		splice_by_field($field_set, $value_set, $field, $value);
+		splice_dictionary($field_set, $value_set, $field, $value);
 	} else {
 		# todo: Index alphabetical
-		push(@$field_set, $field);
-		push(@$value_set, $value);
+		$dict->push_dictionary($field, $value);
 	}
 }
 
-sub push {
+sub push_dictionary {
 	my $dict = shift;
 	my $field = Trim::trim(shift);
 	my $value = Trim::trim(shift);
@@ -49,9 +48,9 @@ sub push {
 }
 
 # Indexed by unique field
-sub splice_by_field {
-	my $fields = shift;
-	my $values = shift;
+sub splice_dictionary {
+	my $field_set = shift;
+	my $value_set = shift;
 	my $field = shift;
 	my $new_value = shift;
 	
@@ -60,10 +59,10 @@ sub splice_by_field {
 	# Splice in the new value
 	
 	# Perl does not support high .. low
-	for(reverse 0 .. $#$fields) {
-		if($field eq $fields->[$_]) {
-			splice($fields, $_ + 1, 0, $field);
-			splice($values, $_ + 1, 0, $new_value);
+	for(reverse 0 .. $#$field_set) {
+		if($field eq $field_set->[$_]) {
+			splice($field_set, $_ + 1, 0, $field);
+			splice($value_set, $_ + 1, 0, $new_value);
 			last;
 		}
 	}	
