@@ -3,10 +3,22 @@ use ArrayHelpers;
 use Trim;
 
 sub new {
-	return bless {
+	my $class = shift;
+	my $field = shift;
+	my $value = shift;
+	
+	my $_self = {
 		field => [],
 		value => []
-	}, shift;
+	};
+	
+	bless $_self, $class;
+	
+	if(defined $field && $field ne '') {
+		$_self->add($field, $value);
+	}
+	
+	return $_self;
 }
 
 sub add {

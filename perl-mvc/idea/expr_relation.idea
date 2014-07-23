@@ -16,18 +16,21 @@ select {
 		[date, time, '']
 	}
 }
-from {
-	{
-		[sales, sales_items],
-		[s, si]
-	},
-	{
-		[left],
+from => {
+	[sales, sales_items],
+	[s, si]
+},
+join => {
+	[left],
+	[
 		{
-			[s.sale_id, s.customer_id],
-			[si.sale_id, si.customer_id]
-		}
-	}
+			[=, =],
+			{
+				[s.sale_id, s.customer_id],
+				[si.sale_id, si.customer_id]
+			}
+		}, {..
+	]
 }
 where {
 	{
@@ -43,33 +46,31 @@ and(s.data like '%data%' or s.data like '%data2%' or(s.data like '%data3%' or s.
 
 #expr relation
 {
-	[and],
+	[and, expr],
 	{
 		[simple],
 		[set]
 	}
 }
 
-#nested expr
-#and or methods with ( use this
-{
-	[and, or, or],
-	# expr_relation
+from('cats')
+where('cat_id >=', 5, 'cat_id <=', 50) //implicit and
+and('cat_type', 'kitten') //explicit
+and('(cat_name like', '%R')
+or(')cat_name like' '%E')
+
+where => {
+	[where, and, and, and],
 	{
-		[like, like, $new_expr()],
-		# field
+		[>=, <=, =, ],
 		{
-			[s.data, s.data]
-			['%data%', '%data2%']
+			[cat_id, cat_id, cat_type],
+			[5, 50, 'kitten']
 		}
 	}
 }
 
-read_expr
-if(expr is a hash)
-read_expr($the_hash) // recursive
-
-expr_relation {
-	expr => [],
-	relation => new_field()
+AndOr._self = {
+	[],
+	new ExprDictionary()
 }

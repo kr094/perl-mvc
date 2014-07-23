@@ -3,15 +3,28 @@ use Dictionary;
 use Trim;
 
 sub new {
-	return bless {
+	my $class = shift;
+	my $expr = shift;
+	my $field = shift;
+	my $value = shift;
+	
+	my $_self = {
 		expr => [],
 		dict => new Dictionary()
-	}, shift;
+	};
+	
+	bless $_self, $class;
+	
+	if(defined $field && $field ne '') {
+		$_self->add($expr, $field, $value);
+	}
+	
+	return $_self;
 }
 
 sub add {
 	my $expr_dict = shift;
-	my $equality = Trim::trim(shift);
+	my $expr = Trim::trim(shift);
 	my $field = Trim::trim(shift);
 	my $value = Trim::trim(shift);
 	
@@ -22,7 +35,7 @@ sub add {
 		$expr = '';
 	}
 	
-	push(@$expr_set, $equality);
+	push(@$expr_set, $expr);
 	$dict->push_dictionary($field, $value);
 }
 

@@ -8,3 +8,39 @@ add a clause to the last called field
 	expr => [],
 	cond => new_field()
 }
+
+
+_andor => {
+	{
+		[select, where, from, join],
+		[
+			{
+				[and, or, or],
+				[exprdict]
+			}
+		]
+	}
+}
+
+#nested expr
+#and or methods with ( use this
+{
+	[and, or, or],
+	# expr_relation
+	{
+		[like, like, $new_expr()],
+		{
+			[s.data, s.data]
+			['%data%', '%data2%']
+		}
+	}
+}
+
+read_expr
+if(expr is a hash)
+read_expr($the_hash) // recursive
+
+expr_relation {
+	expr => [],
+	relation => new_field()
+}

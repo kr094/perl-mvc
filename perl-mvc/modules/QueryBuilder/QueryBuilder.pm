@@ -7,6 +7,7 @@ use Data;
 use Dictionary;
 use ExprDictionary;
 use Trim;
+use Data::Dumper;
 
 sub new {	
 	my $_type = shift;
@@ -16,13 +17,19 @@ sub new {
 		_data => new Data(),
 		select => new Dictionary(),
 		where => new ExprDictionary(),
-		from => {
-			from => new Dictionary(),
-			join => new ExprDictionary()
-		},
+		from => new Dictionary(),
+		join => new Dictionary(),
+		_andor => new Dictionary(),
 		type => '',
 		limit => 0
 	};
+	
+	my $ad = new Dictionary('and', 'value');
+	$ad->nest();
+	print Dumper($ad);
+	$_self->{_andor}->add('where', $ad);
+	
+	#print Dumper($_self);
 	
 	bless $_self, $_class;
 	return $_self;
