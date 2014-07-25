@@ -16,8 +16,7 @@ sub quick_test {
 		
 	print test('select');
 	print test('from');
-	print @{$q->{join}{join}};
-	print $q->{join}{on}->print();
+	print $q->{join}->print();
 	print test('where');
 }
 

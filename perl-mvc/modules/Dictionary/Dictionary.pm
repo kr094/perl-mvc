@@ -10,7 +10,8 @@ sub new {
 	
 	my $_self = {
 		field => [],
-		value => []
+		value => [],
+		count => 0
 	};
 	
 	bless $_self, $class;
@@ -48,6 +49,7 @@ sub push_dictionary {
 	my $value = shift;
 	my $field_set = $dict->{field};
 	my $value_set = $dict->{value};
+	$dict->{count}++;
 	
 	if(!defined $field) {
 		$field = '';
@@ -66,6 +68,7 @@ sub splice_dictionary {
 	my $value = shift;
 	my $field_set = $dict->{field};
 	my $value_set = $dict->{value};
+	$dict->{count}++;
 	
 	# Walk array backwards 
 	# Find the last index for this field
@@ -96,6 +99,11 @@ sub print {
 	}
 	
 	return $print;
+}
+
+sub count {
+	my $t = shift;
+	return $t->{count};
 }
 
 return 1;

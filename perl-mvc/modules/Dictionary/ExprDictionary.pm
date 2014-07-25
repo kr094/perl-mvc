@@ -60,4 +60,9 @@ sub print {
 	return $print;
 }
 
+sub count {
+	my $t = shift;
+	return $t->{dict}->count();
+}
+
 return 1;

@@ -18,10 +18,11 @@ sub new {
 		select => new Dictionary(),
 		where => new ExprDictionary(),
 		from => new Dictionary(),
-		join => {
-			join => [],
-			on => new ExprDictionary()
-		},
+		# join => {
+			# join => [],
+			# on => new ExprDictionary()
+		# },
+		join => new Dictionary(),
 		type => '',
 		limit => 0
 	};
@@ -58,41 +59,43 @@ sub select {
 
 sub from {
 	my $t = shift;
-	my $dict = $t->{from};
 	$t->{_last_call} = 'from';
 	my $table = shift;
 	my $join = shift;
-	my $field = '';
-	my $value = '';
-	my $alias = '';
-	my $ref;
+	my $field;
+	my $alias;
 	my @split = ();
-	
-	if(defined $join) {
-		$t->join($join);
-	}
+	my $ref;
 	
 	$ref = ref $table;
 	
 	if($ref eq 'HASH') {
 		for(keys $table) {
-			$value = $table->{$_};
-			
-			@split = parse_equality($_, '');
-			$field = shift @split;
-			$alias = shift @split;
-			
-			$t->join($join);
-			$dict->push($field, $alias);
+			$alias = $table->{$_};
+			$t->build_from($_, $alias, $join);
 		}
 	} else {
-		@split = parse_equality($table, '');
+		@split = parse_equality($table, '');	
 		$field = shift @split;
 		$alias = shift @split;
-		$dict->push_dictionary($field, $alias);
-	}	
+		$t->build_from($field, $alias, $join);
+	}
 	
 	return $t;
+}
+
+sub build_from {
+	my $t = shift;
+	my $dict = $t->{from};
+	my $table = shift;
+	my $alias = shift;
+	my $join = shift;	
+
+	if(defined $join && $dict->count() > 0) {
+		$t->join($join);
+	}
+
+	$dict->push_dictionary($table, $alias);	
 }
 
 sub join {
@@ -105,9 +108,7 @@ sub join {
 		$join = 'inner';
 	}
 	
-	push(@{$t->{join}{join}}, $join);
-	
-	return $t;
+	$dict->push_dictionary($join, '');
 }
 
 sub where {
@@ -121,12 +122,11 @@ sub where {
 	my $equality = '';
 	my $join = '';
 	my @split = ();
-	my $count = 0;
 	
 	if($last eq 'select') {
 		$dict = $t->{where};
 	} elsif($last eq 'join') {
-		$dict = $t->{join}{on};
+		$dict = new ExprDictionary();
 	} elsif($last eq 'from') {
 		return $t;
 	}
@@ -154,7 +154,6 @@ sub where {
 			$dict->add($equality, $field, $value);
 		}
 		
-		$count++;
 	}
 	
 	return $t;
