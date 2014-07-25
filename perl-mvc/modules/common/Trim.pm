@@ -9,4 +9,4 @@ sub trim {
 	return $trim;
 }
 
-1;
+return 1;

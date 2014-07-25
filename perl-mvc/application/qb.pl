@@ -7,6 +7,20 @@ use QueryBuilder;
 
 my $q = new QueryBuilder();
 
+sub quick_test {
+	$q->select('data')
+		->where('data like', '%sausage%')
+		->from('table t')
+		->from('table b', 'left')
+		->where('t.col', 'b.col');
+		
+	print test('select');
+	print test('from');
+	print @{$q->{join}{join}};
+	print $q->{join}{on}->print();
+	print test('where');
+}
+
 sub test_select {
 	$q->select('data, data, data');		
 	return test('select');
@@ -37,9 +51,9 @@ sub run_test {
 	."Testing Where\n"
 	.test_where() ."\n"
 	."Completed in "
-	.sprintf("%.2f", time() - $start)
+	.sprintf("%.3f", time() - $start)
 	."ms";
 	return $test_result;
 }
 
-print run_test();
+quick_test();
