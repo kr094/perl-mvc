@@ -59,12 +59,14 @@ sub select {
 sub from {
 	my $t = shift;
 	my $dict = $t->{from};
+	$t->{_last_call} = 'from';
 	my $table = shift;
 	my $join = shift;
 	my $field = '';
 	my $value = '';
+	my $alias = '';
 	my $ref;
-	$t->{_last_call} = 'from';
+	my @split = ();
 	
 	if(defined $join) {
 		$t->join($join);
@@ -73,14 +75,21 @@ sub from {
 	$ref = ref $table;
 	
 	if($ref eq 'HASH') {
-		my @keys = keys $table;
-		my $key = $keys[0];
-		$field = $key;
-		$value = $table->{$key};	
+		for(keys $table) {
+			$value = $table->{$_};
+			
+			@split = parse_equality($_, '');
+			$field = shift @split;
+			$alias = shift @split;
+			
+			$t->join($join);
+			$dict->push($field, $alias);
+		}
 	} else {
-		my @split = parse_equality($table, '');
+		@split = parse_equality($table, '');
 		$field = shift @split;
-		$value = shift @split;
+		$alias = shift @split;
+		$dict->push_dictionary($field, $alias);
 	}	
 	
 	return $t;
@@ -105,11 +114,12 @@ sub where {
 	my $t = shift;
 	my $last = $t->{_last_call};
 	my $dict = undef;
-	my $join = '';
 	my $query = undef;
+	my $ref;
 	my $field = '';
 	my $value = '';
 	my $equality = '';
+	my $join = '';
 	my @split = ();
 	my $count = 0;
 	
@@ -117,12 +127,15 @@ sub where {
 		$dict = $t->{where};
 	} elsif($last eq 'join') {
 		$dict = $t->{join}{on};
+	} elsif($last eq 'from') {
+		return $t;
 	}
 	
 	while(@_) {
 		$query = shift;
+		$ref = ref $query;
 		
-		if(ref $query eq 'HASH') {
+		if($ref eq 'HASH') {
 			for(keys $query) {
 				$value = $query->{$_};
 				

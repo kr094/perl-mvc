@@ -15,7 +15,7 @@ sub new {
 	
 	bless $_self, $class;
 	
-	if(defined $field && $field ne '') {
+	if(defined $field) {
 		$_self->add($expr, $field, $value);
 	}
 	
