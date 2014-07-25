@@ -53,6 +53,17 @@ and(s.data like '%data%' or s.data like '%data2%' or(s.data like '%data3%' or s.
 	}
 }
 
+from('table'|{table => 'a'}[, 'left'])
+
+select('data', 'figure as shape')
+where('data like' '%data%')
+from('table s')
+from({table_b => 'f'}, 'left')
+where('s.data', 'f.data')
+where({s.data, 'f.data2'})
+limit(1, 4)
+get()
+
 from('cats')
 where('cat_id >=', 5, 'cat_id <=', 50) //implicit and
 and('cat_type', 'kitten') //explicit
@@ -62,7 +73,7 @@ or(')cat_name like' '%E')
 where => {
 	[where, and, and, and],
 	{
-		[>=, <=, =, ],
+		[>=, <=, =, dict],
 		{
 			[cat_id, cat_id, cat_type],
 			[5, 50, 'kitten']
@@ -70,7 +81,3 @@ where => {
 	}
 }
 
-AndOr._self = {
-	[],
-	new ExprDictionary()
-}

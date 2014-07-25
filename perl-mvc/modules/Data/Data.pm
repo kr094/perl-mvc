@@ -54,10 +54,9 @@ sub new {
 		
 		if(@_) {
 			$_set->($_m, @_);
-			$_v = $_get->($_m);
-		} else {
-			$_v = $_get->($_m);
 		}
+		
+		$_v = $_get->($_m);
 		
 		return $_v;
 	};
@@ -83,6 +82,7 @@ my $_discon = sub {
 	my $t = shift;
 	
 	$t->('dbh')->disconnect();
+	
 	return $t->('dbh', undef);
 };
 
@@ -100,6 +100,7 @@ my $_build_hash = sub {
 		$hash{$col} = $r[$index];
 		$index++;
 	}
+	
 	return \%hash;
 };
 
@@ -116,7 +117,7 @@ my $_exec = sub {
 	}
 	
 	$ret = $sth->execute();
-	if(!$ret || undef $ret) {
+	if(!$ret || !defined $ret) {
 		$ret = 0;
 	}
 	
@@ -132,7 +133,6 @@ my $_exec = sub {
 
 # Public methods #
 
-# Calls to t use This to ensure an object reference
 sub query {
 	my $t = t(\@_);
 	my $query = shift;
@@ -155,7 +155,8 @@ sub get_col {
 		if(exists $hash->{$col}) {
 			$value = $hash->{$col}
 		} else {
-			$value = "No column named $col";
+			warn "No column named $col";
+			$value = undef;
 		}
 	} else {
 		$value = 'Access of no result';
@@ -169,6 +170,7 @@ sub get_col {
 	return $value;
 }
 
+# Use This to ensure an object reference
 sub t {
 	return This::t(@_, __PACKAGE__);
 }

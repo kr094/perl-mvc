@@ -1,4 +1,5 @@
 package Dictionary;
+use lib('../modules/common');
 use ArrayHelpers;
 use Trim;
 
@@ -14,7 +15,7 @@ sub new {
 	
 	bless $_self, $class;
 	
-	if(defined $field && $field ne '') {
+	if(defined $field) {
 		$_self->add($field, $value);
 	}
 	
@@ -37,7 +38,6 @@ sub add {
 	if(ArrayHelpers::in($field_set, $field)) {
 		$dict->splice_dictionary($field, $value);
 	} else {
-		# todo: Index alphabetical
 		$dict->push_dictionary($field, $value);
 	}
 }
