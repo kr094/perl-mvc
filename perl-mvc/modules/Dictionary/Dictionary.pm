@@ -10,8 +10,7 @@ sub new {
 	
 	my $_self = {
 		field => [],
-		value => [],
-		count => 0
+		value => []
 	};
 	
 	bless $_self, $class;
@@ -49,7 +48,6 @@ sub push_dictionary {
 	my $value = shift;
 	my $field_set = $dict->{field};
 	my $value_set = $dict->{value};
-	$dict->{count}++;
 	
 	if(!defined $field) {
 		$field = '';
@@ -68,14 +66,13 @@ sub splice_dictionary {
 	my $value = shift;
 	my $field_set = $dict->{field};
 	my $value_set = $dict->{value};
-	$dict->{count}++;
 	
 	# Walk array backwards 
 	# Find the last index for this field
 	# Splice in the new value
 	
 	# Perl does not support high .. low
-	for(reverse 0 .. $#$field_set) {
+	for(reverse 0 .. $dict->count()) {
 		if($field eq $field_set->[$_]) {
 			splice($field_set, $_ + 1, 0, $field);
 			splice($value_set, $_ + 1, 0, $value);
@@ -109,7 +106,14 @@ sub print {
 
 sub count {
 	my $t = shift;
-	return $t->{count};
+	my $array = $t->{field};
+	my $count = 0;
+	
+	for(keys $array) {
+		$count++;
+	}
+	
+	return $count;
 }
 
 return 1;

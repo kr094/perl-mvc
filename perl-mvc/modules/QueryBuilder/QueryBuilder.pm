@@ -18,10 +18,6 @@ sub new {
 		select => new Dictionary(),
 		where => new ExprDictionary(),
 		from => new Dictionary(),
-		# join => {
-			# join => [],
-			# on => new ExprDictionary()
-		# },
 		join => new Dictionary(),
 		type => '',
 		limit => 0
@@ -91,9 +87,7 @@ sub build_from {
 	my $alias = shift;
 	my $join = shift;	
 	
-	if($dict->count() > 0) {
-		$t->join($join);
-	}
+	$t->join($join);
 
 	$dict->push_dictionary($table, $alias);	
 }
@@ -104,8 +98,12 @@ sub join {
 	my $dict = $t->{join};
 	$t->{_last_call} = 'join';
 	
-	if(!defined $join || $join eq '') {
+	if(!$join) {
 		$join = 'inner';
+	}
+	
+	if($dict->count() == 0) {
+		$join = '';
 	}
 	
 	$dict->push_dictionary($join, '');
@@ -138,9 +136,10 @@ sub where {
 	my $join = '';
 	my @split = ();
 	
-	if($last eq 'select') {
+	if($last eq '' || $last eq 'select') {
 		$dict = $t->{where};
 	} elsif($last eq 'join') {
+		#get the right dict for this join
 		$dict = new ExprDictionary();
 	} elsif($last eq 'from') {
 		return $t;

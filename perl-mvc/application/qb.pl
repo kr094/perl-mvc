@@ -1,25 +1,12 @@
 use strict;
 use warnings;
 use Time::HiRes qw(time);
+use Data::Dumper;
 
 use lib('../modules/QueryBuilder');
 use QueryBuilder;
 
 my $q = new QueryBuilder();
-
-sub quick_test {
-	$q->select('data')
-		->where('data like', '%sausage%')
-		->from('table t')
-		->from('table b', 'left')
-		->where('t.col', 'b.col')
-		->where('t.col2', 'b.col2');
-		
-	print test('select');
-	print test('from');
-	print $q->{join}->print();
-	print test('where');
-}
 
 sub test_select {
 	$q->select('data, data, data');		
@@ -56,4 +43,14 @@ sub run_test {
 	return $test_result;
 }
 
-quick_test();
+sub quick_test {
+	$q->where('data like', '%sausage%')
+		->from('table t')
+		->from('table b', 'left')
+		->where('t.col', 'b.col')
+		->where('t.col2', 'b.col2');
+	
+	return Dumper($q->{from}) .Dumper($q->{join});
+}
+
+print quick_test();

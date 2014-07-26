@@ -50,7 +50,7 @@ sub print {
 	my $value = '';
 	my $print = '';
 	
-	for(0 .. $#$expr_set) {
+	for(0 .. $dict->count()) {
 		$expr = $expr_set->[$_];
 		$field = $field_set->[$_];
 		$value = $value_set->[$_];

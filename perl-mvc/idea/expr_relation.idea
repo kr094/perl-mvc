@@ -42,6 +42,77 @@ where {
 	}
 }
 
+$VAR1 = bless( {
+	'limit' => 0,
+	'select' => bless( {
+					  'field' => [
+								   'data'
+								 ],
+					  'value' => [
+								   ''
+								 ],
+					  'count' => 1
+					}, 'Dictionary' ),
+	'_last_call' => 'join',
+	'join' => bless( {
+					'field' => [
+								 'left',
+								 'left'
+							   ],
+					'count' => 2,
+					'value' => [
+								 bless( {
+										  'expr' => [
+													  '=',
+													  '='
+													],
+										  'dict' => bless( {
+															 'count' => 2,
+															 'value' => [
+																		  'b.col',
+																		  'b.col2'
+																		],
+															 'field' => [
+																		  't.col',
+																		  't.col2'
+																		]
+														   }, 'Dictionary' )
+										}, 'ExprDictionary' ),
+								 $VAR1->{'join'}{'value'}[0]
+							   ]
+				  }, 'Dictionary' ),
+	'type' => 'select',
+	'_data' => bless( sub { "DUMMY" }, 'Data' ),
+	'from' => bless( {
+					'count' => 3,
+					'value' => [
+								 't',
+								 'b',
+								 'a'
+							   ],
+					'field' => [
+								 'table',
+								 'table3',
+								 'table2'
+							   ]
+				  }, 'Dictionary' ),
+	'where' => bless( {
+					 'expr' => [
+								 'like'
+							   ],
+					 'dict' => bless( {
+										'field' => [
+													 'data'
+												   ],
+										'count' => 1,
+										'value' => [
+													 '%sausage%'
+												   ]
+									  }, 'Dictionary' )
+				   }, 'ExprDictionary' )
+	}, 'QueryBuilder' 
+);
+
 and(s.data like '%data%' or s.data like '%data2%' or(s.data like '%data3%' or s.data like '%data4%'))
 
 #expr relation
