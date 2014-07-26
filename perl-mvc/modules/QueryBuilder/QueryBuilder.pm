@@ -90,8 +90,8 @@ sub build_from {
 	my $table = shift;
 	my $alias = shift;
 	my $join = shift;	
-
-	if(defined $join && $dict->count() > 0) {
+	
+	if($dict->count() > 0) {
 		$t->join($join);
 	}
 
@@ -109,6 +109,21 @@ sub join {
 	}
 	
 	$dict->push_dictionary($join, '');
+}
+
+sub build_join {
+	my $t = shift;
+	my $dict = $t->{join};
+	my $expr = shift;
+	my $value = '';
+	
+	for(0 .. $dict->count()) {
+		$value = $dict->{value}[$_];
+		if($value eq '') {
+			$dict->{value}[$_] = $expr;
+			last;
+		}
+	}
 }
 
 sub where {
@@ -154,6 +169,9 @@ sub where {
 			$dict->add($equality, $field, $value);
 		}
 		
+		if($last eq 'join') {
+			$t->build_join($dict);
+		}
 	}
 	
 	return $t;

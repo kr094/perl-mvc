@@ -95,7 +95,13 @@ sub print {
 	for(keys $fields) {
 		$field = $fields->[$_];
 		$value = $values->[$_];		
-		$print .= "$field => $value\n";
+		$print .= "$field => ";
+		
+		if(ref $value eq 'ExprDictionary') {
+			$print .= $value->print();
+		} else {
+			$print .= "$value\n";
+		}
 	}
 	
 	return $print;

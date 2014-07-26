@@ -12,7 +12,8 @@ sub quick_test {
 		->where('data like', '%sausage%')
 		->from('table t')
 		->from('table b', 'left')
-		->where('t.col', 'b.col');
+		->where('t.col', 'b.col')
+		->where('t.col2', 'b.col2');
 		
 	print test('select');
 	print test('from');
