@@ -46,8 +46,6 @@ sub run_test {
 sub quick_test {
 	$q->where('data like', '%sausage%')
 		->from('table t')
-		->from('table b', 'left')
-		->where('t.col', 'b.col')
 		->where('t.col2', 'b.col2');
 	
 	return Dumper($q->{from}) .Dumper($q->{join});

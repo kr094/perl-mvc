@@ -96,7 +96,6 @@ sub join {
 	my $t = shift;
 	my $join = shift;
 	my $dict = $t->{join};
-	$t->{_last_call} = 'join';
 	
 	if(!$join) {
 		$join = 'inner';
@@ -104,6 +103,8 @@ sub join {
 	
 	if($dict->count() == 0) {
 		$join = '';
+	} else {	
+		$t->{_last_call} = 'join';
 	}
 	
 	$dict->push_dictionary($join, '');
@@ -135,7 +136,7 @@ sub where {
 	my $equality = '';
 	my $join = '';
 	my @split = ();
-	
+		
 	if($last eq '' || $last eq 'select') {
 		$dict = $t->{where};
 	} elsif($last eq 'join') {
