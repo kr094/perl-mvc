@@ -1,6 +1,13 @@
-QueryBuilder.pm/sub where
+QueryBuilder.pm/
+
+sub where
 	- From can be filled with tables before the joins are supplied (csv, multiple calls)
 	- Get the right dictionary for the join-on clause (positional)
 	- How to know when were done with this dictionary?
 	- Limit from to one entry per call might be only solution
+
+sub from/join
+	- From is not adhering to the structure where needs
+	- Dictionary of Dictionary => ExprDictionary (always)
+
 	

@@ -9,8 +9,8 @@ use QueryBuilder;
 my $q = new QueryBuilder();
 
 sub test_select {
-	$q->select('data, data, data');		
-	return test('select');
+	$q->select('data as d', 'data2 as d, data3 as d', {data => 'x'});	
+	return test('query');
 }
 
 sub test_where {
@@ -44,11 +44,13 @@ sub run_test {
 }
 
 sub quick_test {
-	$q->where('data like', '%sausage%')
-		->from('table t')
-		->where('t.col2', 'b.col2');
+	$q->select('data as d', 'data2 as d, data3 as d', {data => 'x'})
+		->where('data like', '%sausage%')
+		->from({table => 't'})
+		->from({table2 => 'x'}, 'left')
+		->where({'x.col' => 'z'});
 	
-	return Dumper($q->{from}) .Dumper($q->{join});
+	return Dumper($q->{join});
 }
 
 print quick_test();

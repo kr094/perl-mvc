@@ -15,7 +15,7 @@ sub new {
 	my $_self = {
 		_data => new Data(),
 		_last_call => '',
-		select => new Dictionary(),
+		query => new Dictionary(),
 		where => new ExprDictionary(),
 		from => new Dictionary(),
 		join => new Dictionary(),
@@ -27,28 +27,40 @@ sub new {
 	return $_self;
 }
 
-sub route {
-	my @array = shift;
+sub build_query {
 	my $dict = shift;
+	my @split = ();
+	my $query = undef;
+	my $field = '';
+	my $value = '';
 	my $ref;
 	
-	for(@array) {
+	for(@_) {
 		$ref = ref;
 		if($ref eq 'HASH') {
-			build_from_dict($dict, $_);
+			$query = $_;
+			for(keys $query) {
+				$value = $query->{$_};
+				$dict->add($_, $value);
+			}
 		} elsif($ref eq '') {
-			build_select($dict, $_);
+			for(split_csv($_)) {
+				@split = split_alias($_);
+				$field = shift @split;
+				$value = shift @split;
+				$dict->add($field, $value);
+			}
 		}
 	}
 }
 
 sub select {
 	my $t = shift;
-	my $dict = $t->{select};
+	my $dict = $t->{query};
 	$t->{_last_call} = 'select';
-	$t->{type} = 'select';	
+	$t->{type} = 'select';
 	
-	route(@_, $dict);
+	build_query($dict, @_);
 	
 	return $t;
 }
@@ -69,12 +81,16 @@ sub from {
 		for(keys $table) {
 			$alias = $table->{$_};
 			$t->build_from($_, $alias, $join);
+			last;
 		}
 	} else {
-		@split = parse_equality($table, '');	
-		$field = shift @split;
-		$alias = shift @split;
-		$t->build_from($field, $alias, $join);
+		for(split_csv($table)) {
+			@split = split_equality($_, '');
+			$field = shift @split;
+			$alias = shift @split;
+			$t->build_from($field, $alias, $join);
+			last;
+		}
 	}
 	
 	return $t;
@@ -110,21 +126,6 @@ sub join {
 	$dict->push_dictionary($join, '');
 }
 
-sub build_join {
-	my $t = shift;
-	my $dict = $t->{join};
-	my $expr = shift;
-	my $value = '';
-	
-	for(0 .. $dict->count()) {
-		$value = $dict->{value}[$_];
-		if($value eq '') {
-			$dict->{value}[$_] = $expr;
-			last;
-		}
-	}
-}
-
 sub where {
 	my $t = shift;
 	my $last = $t->{_last_call};
@@ -140,8 +141,14 @@ sub where {
 	if($last eq '' || $last eq 'select') {
 		$dict = $t->{where};
 	} elsif($last eq 'join') {
-		#get the right dict for this join
-		$dict = new ExprDictionary();
+		$dict = $t->{join};
+		
+		if($dict->count() == 1) {
+			$dict = new ExprDictionary();
+		} elsif($dict->count() > 1) {
+			# Get the dict for this join
+			print $dict->print();
+		}
 	} elsif($last eq 'from') {
 		return $t;
 	}
@@ -154,7 +161,7 @@ sub where {
 			for(keys $query) {
 				$value = $query->{$_};
 				
-				@split = parse_equality($_, '=');
+				@split = split_equality($_, '=');
 				$field = shift @split;
 				$equality = shift @split;
 				$dict->add($equality, $_, $value);
@@ -163,7 +170,7 @@ sub where {
 			$field = $query;
 			$value = shift;
 			
-			@split = parse_equality($field, '=');
+			@split = split_equality($field, '=');
 			$field = shift @split;
 			$equality = shift @split;
 			$dict->add($equality, $field, $value);
@@ -177,6 +184,14 @@ sub where {
 	return $t;
 }
 
+sub build_join {
+	my $t = shift;
+	my $dict = $t->{join};
+	my $new_dict = shift;
+	
+	$dict->[$dict->count()] = $new_dict;
+}
+
 sub limit {
 
 }
@@ -185,7 +200,7 @@ sub get {
 
 }
 
-sub parse_equality {
+sub split_equality {
 	my $field = Trim::trim(shift);
 	my $default = shift;
 	my @split = ();
@@ -203,8 +218,7 @@ sub parse_equality {
 	return @split;
 }
 
-sub build_select {
-	my $dict = shift;
+sub split_csv {
 	my $query = shift;
 	my @strings = ();
 	
@@ -214,26 +228,27 @@ sub build_select {
 		push(@strings, $query);
 	}
 	
-	for(@strings) {
-		split_select($dict, $_);
-	}
+	return @strings;
 }
 
-sub split_select {
-	my $dict = shift;
+sub split_alias {
 	my $query = shift;
+	my @split = ();
 	my $field = '';
 	my $value = '';
 	
 	if($query =~ /as/) {
-		my @split = split(/\s+as\s+/, $query, 2);
+		@split = split(/\s+as\s+/, $query, 2);
 		$field = shift @split;
 		$value = shift @split;
 	} else {
 		$field = $query;
 	}
 	
-	$dict->add($field, $value);
+	@split = ();
+	push(@split, $field, $value);
+	
+	return @split;
 }
 
 sub query {

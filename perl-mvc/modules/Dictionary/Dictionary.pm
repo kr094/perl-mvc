@@ -104,6 +104,20 @@ sub print {
 	return $print;
 }
 
+sub get {
+	my $t = shift;
+	my $index = shift;
+	my $field_set = $t->{field};
+	my $value_set = $t->{value};
+	my $value = '';
+	
+	if(defined $field_set->[$index]) {
+		$value = $field_set->[$index];
+	}
+	
+	return $value;
+}
+
 sub count {
 	my $t = shift;
 	my $array = $t->{field};
