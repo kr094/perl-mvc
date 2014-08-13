@@ -43,14 +43,26 @@ sub run_test {
 	return $test_result;
 }
 
+sub print_dumper {
+	my $which_hash = '';
+	my $print = '';
+	while(@_) {
+		$which_hash = shift;
+		$print .= $which_hash ."\n" .Dumper($q->{$which_hash}) ."\n";		
+	}
+	
+	return $print;
+}
+
 sub quick_test {
 	$q->select('data as d', 'data2 as d, data3 as d', {data => 'x'})
 		->where('data like', '%sausage%')
 		->from({table => 't'})
 		->from({table2 => 'x'}, 'left')
+		->from({table2 => 'y'}, 'left')
 		->where({'x.col' => 'z'});
 	
-	return Dumper($q->{join});
+	return print_dumper('from', 'join');
 }
 
 print quick_test();

@@ -9,5 +9,9 @@ sub where
 sub from/join
 	- From is not adhering to the structure where needs
 	- Dictionary of Dictionary => ExprDictionary (always)
-
+	
+Ideas/Other:
+The where clause needs and/or logic structures
+And/Or Methods, implicit anding between consecutive wheres
+Table joining and overall naming/structure still undecided
 	
