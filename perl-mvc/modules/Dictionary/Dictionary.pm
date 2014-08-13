@@ -104,15 +104,29 @@ sub print {
 	return $print;
 }
 
-sub get {
+sub get_field {
 	my $t = shift;
 	my $index = shift;
-	my $field_set = $t->{field};
-	my $value_set = $t->{value};
+	my $dict = $t->{field};
+	
+	return get_by_index($dict, $index);
+}
+
+sub get_value {
+	my $t = shift;
+	my $index = shift;
+	my $dict = $t->{value};
+	
+	return get_by_index($dict, $index);
+}
+
+sub get_by_index {
+	my $dict = shift;
+	my $index = shift;
 	my $value = '';
 	
-	if(defined $field_set->[$index]) {
-		$value = $field_set->[$index];
+	if(defined $dict->[$index]) {
+		$value = $dict->[$index];
 	}
 	
 	return $value;

@@ -130,6 +130,7 @@ sub where {
 	my $t = shift;
 	my $last = $t->{_last_call};
 	my $dict = undef;
+	my @join_members = ();
 	my $query = undef;
 	my $ref;
 	my $field = '';
@@ -141,14 +142,8 @@ sub where {
 	if($last eq '' || $last eq 'select') {
 		$dict = $t->{where};
 	} elsif($last eq 'join') {
-		$dict = $t->{join};
-		
-		if($dict->count() == 1) {
-			$dict = new ExprDictionary();
-		} elsif($dict->count() > 1) {
-			# Get the dict for this join
-			print $dict->print();
-		}
+		@join_members = $t->get_join_dict();
+		$dict = $join_members[1];	
 	} elsif($last eq 'from') {
 		return $t;
 	}
@@ -175,21 +170,10 @@ sub where {
 			$equality = shift @split;
 			$dict->add($equality, $field, $value);
 		}
-		
-		if($last eq 'join') {
-			$t->build_join($dict);
-		}
 	}
 	
+	$t->{_last_call} = 'where';
 	return $t;
-}
-
-sub build_join {
-	my $t = shift;
-	my $dict = $t->{join};
-	my $new_dict = shift;
-	
-	$dict->[$dict->count()] = $new_dict;
 }
 
 sub limit {
@@ -198,6 +182,22 @@ sub limit {
 
 sub get {
 
+}
+
+sub get_join_dict {
+	my $t = shift;
+	my $dict = $t->{join};
+	my $count = $dict->count();
+	my @join_members = ();
+	
+	if($t->{_last_call} eq 'join') {
+		$dict->add(new Dictionary(), new ExprDictionary());
+	}
+	
+	push(@join_members, $dict->get_field($count));
+	push(@join_members, $dict->get_value($count));
+	
+	return @join_members;
 }
 
 sub split_equality {
