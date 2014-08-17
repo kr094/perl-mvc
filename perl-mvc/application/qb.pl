@@ -64,8 +64,5 @@ sub quick_test {
 	return print_dumper('from', 'join');
 }
 
-#print quick_test();
-#print Dumper($q->query());
-for(@{$q->query()}) {
-	print $_ . "\n";
-}
+print quick_test();
+#print for(@{$q->query()});
