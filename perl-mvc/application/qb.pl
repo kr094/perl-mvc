@@ -46,9 +46,8 @@ sub run_test {
 sub print_dumper {
 	my $which_hash = '';
 	my $print = '';
-	while(@_) {
-		$which_hash = shift;
-		$print .= $which_hash ."\n" .Dumper($q->{$which_hash}) ."\n";		
+	while($which_hash = shift) {
+		$print .= "$which_hash\n" .Dumper($q->{$which_hash});	
 	}
 	
 	return $print;
@@ -65,4 +64,8 @@ sub quick_test {
 	return print_dumper('from', 'join');
 }
 
-print quick_test();
+#print quick_test();
+#print Dumper($q->query());
+for(@{$q->query()}) {
+	print $_ . "\n";
+}

@@ -254,8 +254,9 @@ sub split_alias {
 sub query {
 	my $t = shift;
 	my $data = $t->{_data};
-	$data->query('SELECT SQLITE_VERSION() as version');
-	return $data->get_col('version') ."\n";
+	$data->query('SELECT SQLITE_VERSION() as version, 1 as version, 2 as version');
+	# Very subtle bug. Concatenates a newline and returns a string...
+	return $data->get_col('version');
 }
 
 return 1;

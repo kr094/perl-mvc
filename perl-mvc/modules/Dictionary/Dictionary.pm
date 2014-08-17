@@ -1,4 +1,7 @@
 package Dictionary;
+use strict;
+use warnings;
+
 use lib('../modules/common');
 use ArrayHelpers;
 use Trim;
@@ -29,9 +32,9 @@ sub add {
 	my $field_set = $dict->{field};
 	my $value_set = $dict->{value};
 	
-	if(!defined $field) {
+	if(!$field) {
 		$field = '';
-	} elsif(!defined $value) {
+	} elsif(!$value) {
 		$value = '';
 	}
 	
@@ -73,7 +76,7 @@ sub splice_dictionary {
 	
 	# Perl does not support high .. low
 	for(reverse 0 .. $dict->count()) {
-		if($field eq $field_set->[$_]) {
+		if(exists $field_set->[$_] && $field eq $field_set->[$_]) {
 			splice($field_set, $_ + 1, 0, $field);
 			splice($value_set, $_ + 1, 0, $value);
 			last;
@@ -102,6 +105,43 @@ sub print {
 	}
 	
 	return $print;
+}
+
+sub get {
+	my $t = shift;
+	my $field = shift;
+	my $field_set = $t->{field};
+	my $value_set = $t->{value};
+	my $values = [];
+	my $index = 0;
+	my $count = 0;
+	
+	for(values $field_set) {
+		if($_ eq $field) {
+			push(@$values, $value_set->[$index]);
+			$count++;
+		}
+		
+		$index++;
+	}
+	
+	return $values;
+}
+
+sub in {
+	my $t = shift;
+	my $field = shift;
+	my $field_set = $t->{field};
+	my $in = 0;
+	
+	for(values $field_set) {
+		if($_ eq $field) {
+			$in = 1;
+			last;
+		}
+	}
+	
+	return $in;
 }
 
 sub get_field {

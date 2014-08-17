@@ -3,8 +3,9 @@ use strict;
 use warnings;
 use DBI;
 
-use lib('../modules/common');
+use lib('../modules/common', '../modules/Dictionary');
 use This;
+use Dictionary;
 
 sub new {
 	my $_type = shift;
@@ -19,7 +20,7 @@ sub new {
 		rows_affected => 0,
 		result => [],
 		result_columns => [],
-		result_hash => {},
+		result_dict => undef,
 		last_result => undef
 	};
 	
@@ -86,22 +87,20 @@ my $_discon = sub {
 	return $t->('dbh', undef);
 };
 
-# Build a hash reference with columns and values
-# This is what is returned to the querier
-my $_build_hash = sub {
+# Build object for result access
+my $_build_result = sub {
 	my $t = shift;
 	my @r = @{$t->('result')};
-	my %hash;
+	my $dict = new Dictionary();
 	my $index = 0;
 	
 	# Loop through result columns
-	for my $col (@{$t->('result_columns')}) {
-		# Hash the result by column name
-		$hash{$col} = $r[$index];
+	for(@{$t->('result_columns')}) {
+		$dict->add($_, $r[$index]);
 		$index++;
 	}
 	
-	return \%hash;
+	return $dict;
 };
 
 # This method needs to have all its dependencies in scope
@@ -112,20 +111,19 @@ my $_exec = sub {
 	my $ret = 0;
 	
 	$sth = $db->prepare($t->('query'));
-	if(!$sth) {
-		die('no statement');
-	}
 	
-	$ret = $sth->execute();
-	if(!$ret || !defined $ret) {
-		$ret = 0;
+	if($sth) {	
+		$ret = $sth->execute();
+		if(!$ret) {
+			$ret = 0;
+		}
+		
+		$t->('rows_affected', $ret);
+		$t->('last_result', $t->('result'));
+		$t->('result', $sth->fetch());
+		$t->('result_columns', $sth->{NAME});
+		$t->('result_dict', $_build_result->($t));
 	}
-	
-	$t->('rows_affected', $ret);
-	$t->('last_result', $t->('result'));
-	$t->('result', $sth->fetch());
-	$t->('result_columns', $sth->{NAME});
-	$t->('result_hash', $_build_hash->($t));
 	
 	$sth->finish();
 	$db = $_discon->($t);
@@ -146,25 +144,18 @@ sub query {
 
 sub get_col {
 	my $t = t(\@_);
-	my $hash = $t->('result_hash');
+	my $dict = $t->('result_dict');
 	my $col = shift;
 	my $value = '';
 	
-	if(ref $hash eq 'HASH'
-	&& defined $col) {
-		if(exists $hash->{$col}) {
-			$value = $hash->{$col}
+	if($dict->count() > 0) {
+		if($dict->in($col)) {
+			$value = $dict->get($col);
 		} else {
-			warn "No column named $col";
-			$value = undef;
+			warn "No column named $col\n";
 		}
 	} else {
-		$value = 'Access of no result';
-		warn $value;
-	}
-	
-	if(!$value) {
-		$value = '';
+		warn "Empty result set\n";
 	}
 	
 	return $value;
