@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use lib('../modules/common', '../modules/Data', '../modules/Dictionary');
+use Data::Dumper;
 use Data;
 use Dictionary;
 use ExprDictionary;
@@ -111,7 +112,8 @@ sub build_from {
 sub join {
 	my $t = shift;
 	my $join = shift;
-	my $dict = $t->{join};
+	my @join_members = $t->get_join_dict();
+	my $dict = $join_members[1];
 	
 	if(!$join) {
 		$join = 'inner';
@@ -119,7 +121,7 @@ sub join {
 	
 	if($dict->count() == 0) {
 		$join = '';
-	} else {	
+	} else {
 		$t->{_last_call} = 'join';
 	}
 	
@@ -143,7 +145,7 @@ sub where {
 		$dict = $t->{where};
 	} elsif($last eq 'join') {
 		@join_members = $t->get_join_dict();
-		$dict = $join_members[1];	
+		$dict = $join_members[1];
 	} elsif($last eq 'from') {
 		return $t;
 	}
@@ -187,10 +189,11 @@ sub get {
 sub get_join_dict {
 	my $t = shift;
 	my $dict = $t->{join};
-	my $count = $dict->count();
+	my $count = 0;
 	my @join_members = ();
 	
-	if($t->{_last_call} eq 'join') {
+	$count = $dict->count() - 1;
+	if($count > 0 && $t->{_last_call} eq 'join') {
 		$dict->add(new Dictionary(), new ExprDictionary());
 	}
 	

@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use autodie;
 use Time::HiRes qw(time);
 use Data::Dumper;
 
