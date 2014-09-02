@@ -14,4 +14,13 @@ Ideas/Other:
 The where clause needs and/or logic structures
 And/Or Methods, implicit anding between consecutive wheres
 Table joining and overall naming/structure still undecided
-	
+
+The reason for making a custom dictionary object is any good SQL engine allows you to select the same column with multiple values.
+Ala: select 1 as data, 2 as data from dual; (mysql, sqlite)
+
+A hash would overwrite the second column,
+So a dictionary object that allows multiple equal keys and indexes by key was created.
+
+ExprDictionary is quite simply a dictionary with an additional layer of mapping.
+
+expr_dict key => new dictionary
