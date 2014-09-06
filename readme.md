@@ -25,3 +25,14 @@ select('field', 'field3 as field3, field4 as field4', {field5 => 'field5'})
 	->where('table.x', 'table2.x')
 	// From is used as the control of which join dictionary to grab
 	// Because of this it can only be called with one table at a time, unlike all other methods
+
+	
+The reason for making a custom dictionary object is any good SQL engine allows you to select the same column with multiple values.
+Ala: select 1 as data, 2 as data from dual; (mysql, sqlite)
+
+A hash would overwrite the second column,
+So a dictionary object that allows multiple equal keys and indexes by key was created.
+
+ExprDictionary is quite simply a dictionary with an additional layer of mapping.
+
+expr_dict key => new dictionary
