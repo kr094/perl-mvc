@@ -59,8 +59,9 @@ sub quick_test {
 		->where('data like', '%sausage%')
 		->from({table => 't'})
 		->from({table2 => 'x'}, 'left')
-		->from({table2 => 'y'}, 'left')
-		->where({'x.col' => 'z'});
+		->where({'t.col' => 'x.col'});
+		->from('table3', 'right')
+		->where('t.col is', 'null');
 	
 	return print_dumper('from', 'join');
 }

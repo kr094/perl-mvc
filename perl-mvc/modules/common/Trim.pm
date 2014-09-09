@@ -1,10 +1,12 @@
 package Trim;
 
 sub trim {
-	my $trim = shift;
+	my $string = shift;
+	my $trim = $string;
 	
-	$trim =~ s/^\s+//;
-	$trim =~ s/\s+$//;
+	if($string =~ s/^\s+(.+?)\s+$/$1/s) {
+		$trim = $string;
+	}
 	
 	return $trim;
 }
