@@ -1,0 +1,34 @@
+dictionary = {
+	field => value
+	field2 => value
+}
+
+unless exists then dictionary = {
+	field => [value, value2]
+	field2 => value
+}
+
+where x = value and(y = value or y = value2)
+
+from(table t)
+from(table2 x, left)
+where(col => value)
+or(col2 => value2)
+
+# Avoid relying on positional data
+
+from = [{
+	table => table
+	alias => t
+	join => ''
+	on => undef
+}
+,{
+	table => table2
+	alias => x
+	join => 'left'
+	on => dict {
+		'col' => 'value'
+		'col2' => 'value2'
+	}
+}...]

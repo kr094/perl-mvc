@@ -45,10 +45,9 @@ sub run_test {
 }
 
 sub print_dumper {
-	my $which_hash = '';
 	my $print = '';
-	while($which_hash = shift) {
-		$print .= "$which_hash\n" .Dumper($q->{$which_hash});	
+	for(@_) {	
+		$print .= "$_\n" .Dumper($q->{$which_hash});
 	}
 	
 	return $print;
@@ -56,13 +55,13 @@ sub print_dumper {
 
 sub quick_test {
 	$q->select('data as d', 'data2 as d, data3 as d', {data => 'x'})
-		->where('data like', '%sausage%')
+		->where('data like', '%data%')
 		->from({table => 't'})
+		# default being inner join no longer applies?
 		->from({table2 => 'x'}, 'left')
 		->where({'t.col' => 'x.col'});
 		->from('table3', 'right')
 		->where('t.col is', 'null');
-	
 	return print_dumper('from', 'join');
 }
 
