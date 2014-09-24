@@ -1,6 +1,7 @@
 # qb
 
 This is my take on active record in perl
+
 Data/Data.pm uses full encapsulation, enforced object reference, and private subs
 
 application/qb.pl to run
