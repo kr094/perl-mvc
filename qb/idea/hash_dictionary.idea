@@ -26,9 +26,51 @@ from = [{
 ,{
 	table => table2
 	alias => x
-	join => 'left'
-	on => dict {
-		'col' => 'value'
-		'col2' => 'value2'
+	join => {
+		join => 'left',
+		on => {
+			field => value
+			field2 => [value1, value2]
+		}
 	}
 }...]
+
+select('data', 'shape')
+where('data like' '%shape%')
+from('table s')
+from({table_2 => 'f'}, 'left')
+where('s.data', 'f.data')
+where({s.data >=, 'f.data2'})
+from('table_3 q', right)
+where('s.data !=', 'q.data')
+get(1, 4)
+
+from => {
+	join => {
+		operator => [from, left, right],
+		equality => {
+			table => s,
+			table_2 => f
+			table_3 => q
+		}
+	},
+	on => {
+		[{
+			operator => [=, >=],
+			equality => {
+				[s.data, f.data],
+				[f.data, f.data2]
+			}
+		},
+		]
+	}
+}
+
+where => {
+	operator => [where, and],
+	equality => {
+		[s.data, f.data],
+		[f.data, f.data2]
+	}
+}
+
