@@ -5,8 +5,12 @@ use Data::Dumper;
 
 $d = new Dictionary;
 
-print Dumper($d->add('1', '2', 1, 2, 1, 2, 3, 4, 3, 4, 5, 5, 6, 6));
+print Dumper($d->add('key', 'value', 'key2', 'value2'));
 
 print $d->size() ."\n";
 
 print $d->get_index($_) for(0..$d->count());
+
+print "\n";
+
+print $d->get_key($_) for(keys %$d);
