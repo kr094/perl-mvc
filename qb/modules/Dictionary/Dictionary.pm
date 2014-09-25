@@ -1,12 +1,11 @@
 package Dictionary;
 use strict;
 use warnings;
+use Class::Interface;
 use Tie::IxHash;
 
-use Class::Interface;
-&implements('iDictionary');
-
 use Container;
+&implements('iDictionary');
 
 sub new {
 	my $_type = shift;
@@ -24,6 +23,22 @@ sub keys {
 sub values {
 	my $t = shift;
 	return values %$t;
+}
+
+sub size {
+	my $t = shift;
+	my $size = 0;
+	
+	for($t->keys()) {
+		++$size;
+	}
+	
+	return $size;
+}
+
+sub count {
+	my $t = shift;
+	return $t->size() - 1;
 }
 
 sub add {
@@ -45,6 +60,22 @@ sub add {
 			$t->{$key} = $val;
 		}
 	}
+}
+
+sub key_value {
+	my $t = shift;
+	my $key = undef;
+	my @values = ();
+	
+	while(@_) {
+		$key = shift;
+		
+		if($key && exists $t->{$key}) {
+			push(@values, $t->{$key});
+		}
+	}
+	
+	return @values;
 }
 
 sub index_value {
@@ -79,38 +110,6 @@ sub _get_index {
 	}
 	
 	return @values;
-}
-
-sub key_value {
-	my $t = shift;
-	my $key = undef;
-	my @get = ();
-	
-	while(@_) {
-		$key = shift;
-		
-		if($key && exists $t->{$key}) {
-			push(@get, $t->{$key});
-		}
-	}
-	
-	return @get;
-}
-
-sub size {
-	my $t = shift;
-	my $size = 0;
-	
-	for($t->keys()) {
-		++$size;
-	}
-	
-	return $size;
-}
-
-sub count {
-	my $t = shift;
-	return $t->size() - 1;
 }
 
 1;
