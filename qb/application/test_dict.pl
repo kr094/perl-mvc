@@ -13,4 +13,4 @@ print $d->get_index($_) for(0..$d->count());
 
 print "\n";
 
-print $d->get_key($_) for(keys %$d);
+print $d->get_key($_) for($d->keys());

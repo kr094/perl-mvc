@@ -17,6 +17,16 @@ sub new {
 	bless $public, $class;
 }
 
+sub keys {
+	my $t = shift;
+	return keys %$t;
+}
+
+sub values {
+	my $t = shift;
+	return values %$t;
+}
+
 sub add {
 	my $t = shift;
 	my $key = '';
@@ -49,7 +59,7 @@ sub get_index {
 	while(@_) {
 		$index = shift;
 		
-		for(keys %$t) {
+		for($t->keys()) {
 			if($curr_index == $index) {
 				push(@get, $_);
 				$curr_index = 0;
@@ -84,7 +94,7 @@ sub size {
 	my $t = shift;
 	my $size = 0;
 	
-	for(keys %$t) {
+	for($t->keys()) {
 		++$size;
 	}
 	
