@@ -4,12 +4,11 @@ use Class::Interface;
 
 sub keys;
 sub values;
+sub size;
+sub count;
 
 sub add;
 sub get_index;
 sub get_key;
-
-sub size;
-sub count;
 
 1;
