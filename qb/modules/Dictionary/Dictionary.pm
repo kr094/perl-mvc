@@ -21,7 +21,6 @@ sub add {
 	my $t = shift;
 	my $key = '';
 	my $val = '';
-	my $temp = undef;
 	
 	while(@_) {
 		$key = shift;
@@ -31,9 +30,7 @@ sub add {
 			if(ref $t->{$key}) {
 				push($t->{$key}, $val);
 			} else {
-				$temp = $t->{$key};
-				$temp = [$temp, $val];
-				$t->{$key} = $temp;
+				$t->{$key} = [$t->{$key}, $val];
 			}
 		} else {
 			$t->{$key} = $val;
