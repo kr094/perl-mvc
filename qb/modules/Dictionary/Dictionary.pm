@@ -4,8 +4,18 @@ use Class::Interface;
 
 use strict;
 use warnings;
-use Data::Dumper;
 use Tie::IxHash;
+
+sub new {
+	my $_type = shift;
+	my $class = ref $_type || $_type;
+	
+	tie my %_self, 'Tie::IxHash';
+	
+	my $public = \%_self;
+	
+	bless $public, $class;
+}
 
 sub add {
 	my $t = shift;
@@ -30,20 +40,64 @@ sub add {
 		}
 	}
 	
-	print Dumper($t);
+	return $t;
 }
 
-sub new {
-	my $_type = shift;
-	my $class = ref $_type || $_type;
+sub get_index {
+	my $t = shift;
+	my $index = 0;
+	my $curr_index = 0;
+	my @get = ();
 	
-	tie my %_self, 'Tie::IxHash';
+	while(@_) {
+		$index = shift;
+		
+		for(keys %$t) {
+			if($curr_index == $index) {
+				push(@get, $_);
+				$curr_index = 0;
+				last;
+			}
+			
+			++$curr_index;
+		}
+	}
 	
-	my $public = \%_self;
-	
-	bless $public, $class;
+	return @get;
 }
 
-new Dictionary->add('1', '2', 1, 2, 1, 2, 3, 4, 3, 4, 5, 5, 6, 6);
+sub get_key {
+	my $t = shift;
+	my $key = '';
+	my @get = ();
+	
+	while(@_) {
+		$key = shift;
+		
+		if($key
+		&& exists $t->{$key}) {
+			push(@get, $t->{$key});
+		}
+	}
+	
+	return @get;
+}
+
+sub size {
+	my $t = shift;
+	my $size = 0;
+	
+	for(keys %$t) {
+		++$size;
+	}
+	
+	return $size;
+}
+
+sub count {
+	my $t = shift;
+	return $t->size() - 1;
+}
 
 1;
+
