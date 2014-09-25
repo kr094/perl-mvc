@@ -8,7 +8,8 @@ sub size;
 sub count;
 
 sub add;
-sub get_index;
-sub get_key;
+sub index_value;
+sub index_key;
+sub key_value;
 
 1;

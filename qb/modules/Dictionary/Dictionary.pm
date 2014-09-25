@@ -1,20 +1,19 @@
 package Dictionary;
-use Class::Interface;
-&implements('iDictionary');
-
 use strict;
 use warnings;
 use Tie::IxHash;
 
+use Class::Interface;
+&implements('iDictionary');
+
+use Container;
+
 sub new {
 	my $_type = shift;
-	my $class = ref $_type || $_type;
+	my $class = ref $_type || $_type;	
+	tie my %self, 'Tie::IxHash';
 	
-	tie my %_self, 'Tie::IxHash';
-	
-	my $public = \%_self;
-	
-	bless $public, $class;
+	bless \%self, $class;
 }
 
 sub keys {
@@ -29,39 +28,48 @@ sub values {
 
 sub add {
 	my $t = shift;
-	my $key = '';
-	my $val = '';
+	my $key = undef;
+	my $val = undef;
 	
 	while(@_) {
 		$key = shift;
 		$val = shift;
 		
 		if(exists $t->{$key}) {
-			if(ref $t->{$key}) {
-				push($t->{$key}, $val);
+			if(ref $t->{$key} eq 'Container') {
+				push(@{$t->{$key}}, $val);
 			} else {
-				$t->{$key} = [$t->{$key}, $val];
+				$t->{$key} = new Container($t->{$key}, $val);
 			}
 		} else {
 			$t->{$key} = $val;
 		}
 	}
-	
-	return $t;
 }
 
-sub get_index {
+sub index_value {
 	my $t = shift;
-	my $index = 0;
+	return $t->_get_index([$t->values()], @_);
+}
+
+sub index_key {
+	my $t = shift;
+	return $t->_get_index([$t->keys()], @_);
+}
+
+sub _get_index {
+	my $t = shift;
+	my $array = shift;
+	my $index = undef;
 	my $curr_index = 0;
-	my @get = ();
+	my @values = ();
 	
 	while(@_) {
 		$index = shift;
 		
-		for($t->keys()) {
-			if($curr_index == $index) {
-				push(@get, $_);
+		for(@$array) {
+			if($index == $curr_index) {
+				push(@values, $_);
 				$curr_index = 0;
 				last;
 			}
@@ -70,19 +78,18 @@ sub get_index {
 		}
 	}
 	
-	return @get;
+	return @values;
 }
 
-sub get_key {
+sub key_value {
 	my $t = shift;
-	my $key = '';
+	my $key = undef;
 	my @get = ();
 	
 	while(@_) {
 		$key = shift;
 		
-		if($key
-		&& exists $t->{$key}) {
+		if($key && exists $t->{$key}) {
 			push(@get, $t->{$key});
 		}
 	}
