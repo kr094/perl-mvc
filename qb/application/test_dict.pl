@@ -3,7 +3,7 @@ use lib('../modules/Dictionary');
 use Dictionary;
 
 $d = new Dictionary;
-$d->add(1, 2, 3, 4, {key => 'val'}, {key => 'test'});
+$d->add(1, 2, {0 => 5});
 test($d);
 
 sub test {

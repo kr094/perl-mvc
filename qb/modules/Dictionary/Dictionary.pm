@@ -74,7 +74,7 @@ sub key_value {
 	while(@_) {
 		$key = shift;
 		
-		if($key && exists $t->{$key}) {
+		if(exists $t->{$key}) {
 			push(@values, $t->{$key});
 		}
 	}
