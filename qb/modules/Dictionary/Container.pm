@@ -6,9 +6,7 @@ sub new {
 	my $class = ref $_type || $_type;
 	my $self = [];
 	
-	for(@_) {
-		push($self, $_);
-	}
+	push($self, $_) for(@_);
 	
 	bless $self, $class;
 }

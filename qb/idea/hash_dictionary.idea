@@ -37,6 +37,7 @@ from = [{
 
 select('data', 'shape')
 where('data like' '%shape%')
+wherre('data', 'shape')
 from('table s')
 from({table_2 => 'f'}, 'left')
 where('s.data', 'f.data')
@@ -46,31 +47,24 @@ where('s.data !=', 'q.data')
 get(1, 4)
 
 from => {
-	join => {
-		operator => [from, left, right],
-		equality => {
-			table => s,
-			table_2 => f
-			table_3 => q
-		}
-	},
-	on => {
-		[{
-			operator => [=, >=],
-			equality => {
-				[s.data, f.data],
-				[f.data, f.data2]
-			}
-		},
-		]
-	}
+	
 }
 
 where => {
-	operator => [where, and],
-	equality => {
-		[s.data, f.data],
-		[f.data, f.data2]
+	_map => {
+		0 => {where => 0}
+		1 => {and => 0}
+		2 => {and => 1}
+		3 => {or => 0}
+	}
+	where => {
+		data => 'like %shape%'
+	}
+	and => {
+		data => ['= shape', 'like 2']
+	}
+	or => {
+		data => 'shape'
 	}
 }
 

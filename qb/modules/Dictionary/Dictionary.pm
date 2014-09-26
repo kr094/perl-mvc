@@ -29,9 +29,7 @@ sub size {
 	my $t = shift;
 	my $size = 0;
 	
-	for($t->keys()) {
-		++$size;
-	}
+	++$size for($t->keys());
 	
 	return $size;
 }
@@ -48,16 +46,22 @@ sub add {
 	
 	while(@_) {
 		$key = shift;
-		$val = shift;
 		
-		if(exists $t->{$key}) {
-			if(ref $t->{$key} eq 'Container') {
-				push(@{$t->{$key}}, $val);
-			} else {
-				$t->{$key} = new Container($t->{$key}, $val);
+		if(ref $key eq 'HASH') {
+			for(CORE::keys %$key) {
+				$val = $key->{$_};
+				
+				if(!$val) {
+					$val = $_;
+					$key = $t->size();
+				} else {
+					$key = $_;
+				}
+				
+				$t->_add_pair($key, $val);
 			}
 		} else {
-			$t->{$key} = $val;
+			$t->_add_pair($t->size(), $key);
 		}
 	}
 }
@@ -80,16 +84,15 @@ sub key_value {
 
 sub index_value {
 	my $t = shift;
-	return $t->_get_index([$t->values()], @_);
+	return _get_index([$t->values()], @_);
 }
 
 sub index_key {
 	my $t = shift;
-	return $t->_get_index([$t->keys()], @_);
+	return _get_index([$t->keys()], @_);
 }
 
 sub _get_index {
-	my $t = shift;
 	my $array = shift;
 	my $index = undef;
 	my $curr_index = 0;
@@ -110,6 +113,22 @@ sub _get_index {
 	}
 	
 	return @values;
+}
+
+sub _add_pair {
+	my $t = shift;
+	my $key = shift;
+	my $val = shift;	
+		
+	if(exists $t->{$key}) {
+		if(ref $t->{$key} eq 'Container') {
+			push(@{$t->{$key}}, $val);
+		} else {
+			$t->{$key} = new Container($t->{$key}, $val);
+		}
+	} else {			
+		$t->{$key} = $val;
+	}
 }
 
 1;
