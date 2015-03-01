@@ -1,18 +1,29 @@
 package Dictionary;
 use strict;
 use warnings;
-use Class::Interface;
 use Tie::IxHash;
-
 use Container;
-&implements('iDictionary');
+
+our %CONFIG = (
+	'append_on_dup_key' => 1
+);
+
+sub set_option {
+	my ($option, $value) = @_;
+
+	if(exists $CONFIG{$option}) {
+		$CONFIG{$option} = $value;
+	}
+}
 
 sub new {
 	my $_type = shift;
 	my $class = ref $_type || $_type;	
-	tie my %self, 'Tie::IxHash';
-	
-	bless \%self, $class;
+	tie my %hash, 'Tie::IxHash';
+	my $self = \%hash;
+
+	bless $self, $class;
+	return $self;
 }
 
 sub keys {
@@ -29,107 +40,107 @@ sub size {
 	my $t = shift;
 	my $size = 0;
 	
-	++$size for($t->keys());
+	$size++ for($t->keys());
 	
 	return $size;
 }
 
-sub count {
+sub range {
 	my $t = shift;
-	return $t->size() - 1;
+	return (0..$t->size());
+}
+
+sub value {
+	my $t = shift;
+	my @values = ();
+
+	for my $key (@_) {
+		if(exists $t->{$key}) {
+			push(@values, $t->{$key});
+		}
+	}
+
+	if(@values == 1) {
+		return shift @values;
+	}
+	
+	return @values;
+}
+
+sub key_at {
+	my $t = shift;
+	return _get_by_index([$t->keys()], @_);
+}
+
+sub value_at {
+	my $t = shift;
+	return _get_by_index([$t->values()], @_);
+}
+
+sub _get_by_index {
+	my $array = shift;
+	my @values = ();
+
+	for my $index (@_) {
+		if(exists $array->[$index]) {
+			push(@values, $array->[$index])
+		}
+	}
+	
+	return @values;
 }
 
 sub add {
 	my $t = shift;
-	my $key = undef;
-	my $val = undef;
-	
-	while(@_) {
-		$key = shift;
-		
-		if(ref $key eq 'HASH') {
-			for(CORE::keys %$key) {
-				$val = $key->{$_};
-				
-				if(!$val) {
-					$val = $_;
-					$key = $t->size();
-				} else {
-					$key = $_;
-				}
-				
-				$t->_add_pair($key, $val);
+	my ($key, $value, $ref);
+
+	for my $item (@_) {
+		$ref = ref $item;
+		if($ref eq 'HASH') {
+			for(CORE::keys %$item) {
+				$key = $_;
+				$value = $item->{$key};
+				$t->_add_pair($key, $value);
+			}
+		} elsif($ref eq 'ARRAY') {
+			for(@$item) {
+				$key = $t->size();
+				$value = $_;
+				$t->_add_pair($key, $value);
 			}
 		} else {
-			$t->_add_pair($t->size(), $key);
+			$key = $t->size();
+			$value = $item;
+			$t->_add_pair($key, $value);
 		}
 	}
-}
-
-sub key_value {
-	my $t = shift;
-	my $key = undef;
-	my @values = ();
-	
-	while(@_) {
-		$key = shift;
-		
-		if($key && exists $t->{$key}) {
-			push(@values, $t->{$key});
-		}
-	}
-	
-	return @values;
-}
-
-sub index_value {
-	my $t = shift;
-	return _get_index([$t->values()], @_);
-}
-
-sub index_key {
-	my $t = shift;
-	return _get_index([$t->keys()], @_);
-}
-
-sub _get_index {
-	my $array = shift;
-	my $index = undef;
-	my $curr_index = 0;
-	my @values = ();
-	
-	while(@_) {
-		$index = shift;
-		
-		for(@$array) {
-			if($index == $curr_index) {
-				push(@values, $_);
-				$curr_index = 0;
-				last;
-			}
-			
-			++$curr_index;
-		}
-	}
-	
-	return @values;
 }
 
 sub _add_pair {
-	my $t = shift;
-	my $key = shift;
-	my $val = shift;	
-		
-	if(exists $t->{$key}) {
-		if(ref $t->{$key} eq 'Container') {
-			push(@{$t->{$key}}, $val);
+	my ($t, $key, $value) = @_;
+
+	if($CONFIG{'append_on_dup_key'}) {
+		if(exists $t->{$key}) {
+			if(ref $t->{$key} eq 'Container') {
+				
+				# Append to this key's Container
+				push(@{ $t->{$key} }, $value);
+			} else {
+
+				# Create a new Container with this value and the previous
+				$t->{$key} = new Container($t->{$key}, $value);
+			}
 		} else {
-			$t->{$key} = new Container($t->{$key}, $val);
+
+			# Add new key
+			$t->{$key} = $value;
 		}
-	} else {			
-		$t->{$key} = $val;
+	} else {
+
+		# Add or update
+		$t->{$key} = $value;
 	}
 }
 
-1;
+return 1;
 
