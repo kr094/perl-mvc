@@ -1,6 +1,6 @@
 package Container;
 
-# Just a blessed array-ref because ref needs to be concrete
+# Object arround an array to make ref concrete
 sub new {
 	my $_type = shift;
 	my $class = ref $_type || $_type;
@@ -9,6 +9,7 @@ sub new {
 	push($self, $_) for(@_);
 	
 	bless $self, $class;
+	return $self;
 }
 
-1;
+return 1;
